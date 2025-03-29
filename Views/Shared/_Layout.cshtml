@@ -38,11 +38,36 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - DarkCloud - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="footer bg-dark text-white py-4">
+    <div class="container">
+        <div class="row">
+            <!-- Información de la tienda -->
+            <div class="col-md-4">
+                <h5>Sobre DarkCloud</h5>
+                <p>Tu tienda de videojuegos favorita. Encuentra los mejores títulos, ofertas y accesorios para gamers.</p>
+            </div>
+            <!-- Enlaces rápidos -->
+            <div class="col-md-4">
+                <h5>Enlaces rápidos</h5>
+                <ul class="list-unstyled">
+                    <li><a class="text-white" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a></li>
+                    <li><a class="text-white" asp-area="" asp-controller="Home" asp-action="Privacy">Política de privacidad</a></li>
+                    <li><a class="text-white" href="#">Términos y condiciones</a></li>
+                </ul>
+            </div>
+            <!-- Contacto -->
+            <div class="col-md-4">
+                <h5>Contáctanos</h5>
+                <p>Email: <a class="text-white" href="mailto:contacto@darkcloud.com">dc@darkcloud.com</a></p>
+                <p>Teléfono: Vivo te crees para pedir numero no?</p>
+                <p>Dirección: Aun no tenemos tiendita hijitoC</p>
+            </div>
         </div>
-    </footer>
+        <div class="text-center mt-3">
+            <p>&copy; 2025 - DarkCloud. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

@@ -41,9 +41,26 @@ button.accept-policy[b-ubg2zihjg8] {
 }
 
 .footer[b-ubg2zihjg8] {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px;
+  background-color: #343a40; /* Fondo oscuro */
+  color: #ffffff; /* Texto blanco */
+  padding: 20px 0;
+}
+
+.footer h5[b-ubg2zihjg8] {
+  font-size: 1.25rem;
+  margin-bottom: 15px;
+}
+
+.footer a[b-ubg2zihjg8] {
+  color: #ffc107; /* Color amarillo para enlaces */
+  text-decoration: none;
+}
+
+.footer a:hover[b-ubg2zihjg8] {
+  text-decoration: underline;
+}
+
+.footer p[b-ubg2zihjg8] {
+  margin: 0;
+  font-size: 0.9rem;
 }
