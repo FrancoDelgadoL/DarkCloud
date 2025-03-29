@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\USMP\\Programacion 1\\DarkCloud prueba\\DarkCloud\\DarkCloud.csproj": {}
+    "D:\\USMP\\Programacion 1\\DarkCloud_prueba\\DarkCloud\\DarkCloud.csproj": {}
   },
   "projects": {
-    "D:\\USMP\\Programacion 1\\DarkCloud prueba\\DarkCloud\\DarkCloud.csproj": {
+    "D:\\USMP\\Programacion 1\\DarkCloud_prueba\\DarkCloud\\DarkCloud.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\USMP\\Programacion 1\\DarkCloud prueba\\DarkCloud\\DarkCloud.csproj",
+        "projectUniqueName": "D:\\USMP\\Programacion 1\\DarkCloud_prueba\\DarkCloud\\DarkCloud.csproj",
         "projectName": "DarkCloud",
-        "projectPath": "D:\\USMP\\Programacion 1\\DarkCloud prueba\\DarkCloud\\DarkCloud.csproj",
+        "projectPath": "D:\\USMP\\Programacion 1\\DarkCloud_prueba\\DarkCloud\\DarkCloud.csproj",
         "packagesPath": "C:\\Users\\franc\\.nuget\\packages\\",
-        "outputPath": "D:\\USMP\\Programacion 1\\DarkCloud prueba\\DarkCloud\\obj\\",
+        "outputPath": "D:\\USMP\\Programacion 1\\DarkCloud_prueba\\DarkCloud\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\franc\\AppData\\Roaming\\NuGet\\NuGet.Config"
