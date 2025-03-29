@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "D:\\USMP\\Programacion 1\\DarkCloud\\DarkCloud.csproj": {}
+    "C:\\Users\\marce\\Desktop\\PC1\\DarkCloud\\DarkCloud.csproj": {}
   },
   "projects": {
-    "D:\\USMP\\Programacion 1\\DarkCloud\\DarkCloud.csproj": {
+    "C:\\Users\\marce\\Desktop\\PC1\\DarkCloud\\DarkCloud.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\USMP\\Programacion 1\\DarkCloud\\DarkCloud.csproj",
+        "projectUniqueName": "C:\\Users\\marce\\Desktop\\PC1\\DarkCloud\\DarkCloud.csproj",
         "projectName": "DarkCloud",
-        "projectPath": "D:\\USMP\\Programacion 1\\DarkCloud\\DarkCloud.csproj",
-        "packagesPath": "C:\\Users\\franc\\.nuget\\packages\\",
-        "outputPath": "D:\\USMP\\Programacion 1\\DarkCloud\\obj\\",
+        "projectPath": "C:\\Users\\marce\\Desktop\\PC1\\DarkCloud\\DarkCloud.csproj",
+        "packagesPath": "C:\\Users\\marce\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\marce\\Desktop\\PC1\\DarkCloud\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\franc\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\marce\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
