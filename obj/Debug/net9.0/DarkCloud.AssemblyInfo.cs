@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DarkCloud")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9f97661db4a917a4381144dc934e8e05c8714b6f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cb65f838729d40dc39d31f084b46b205e5abe522")]
 [assembly: System.Reflection.AssemblyProductAttribute("DarkCloud")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DarkCloud")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
