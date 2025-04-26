@@ -20,6 +20,7 @@ public class HomeController : Controller
 
     public IActionResult Login()
     {
+        ViewData["OcultarFooter"] = true;
         return View();
     }
 
