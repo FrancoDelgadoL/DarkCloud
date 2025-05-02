@@ -3,19 +3,29 @@
 }
 
 <body class="text-white"  style="background-color: rgb(2, 2, 2);">
-<nav class="navbar navbar-dark bg-dark">
-    <a class="navbar-brand d-flex align-items-center" href="#">
+<nav class="navbar navbar-dark bg-dark px-4">
+  <a class="navbar-brand d-flex align-items-center" href="#">
     <img src="/images/dark-cloud-logo.jpeg" width="40" height="40" class="d-inline-block align-top me-2" alt="Dark Cloud Logo">
     <span>DARK CLOUD</span>
   </a>
+
+  <!-- Barra de búsqueda centrada -->
+  <div class="mx-auto d-flex">
+    <form class="d-flex" role="search">
+      <input class="form-control me-2" type="search" placeholder="Buscar juegos..." aria-label="Buscar">
+      <button class="btn btn-outline-light" type="submit">Buscar</button>
+    </form>
+  </div>
+
+  <!-- Enlaces y botón a la derecha -->
   <div class="ms-auto d-flex align-items-center">
-    <span class="navbar-toggler-icon"></span>
     <a class="nav-link text-white me-3" href="#">PRODUCTOS</a>
-    <form asp-controller="Home" asp-action="login" method="get">
-        <button type="submit">Iniciar Sesion</button>
+    <form asp-controller="Home" asp-action="login" method="get" class="mb-0">
+      <button class="btn btn-light btn-sm" type="submit">Iniciar Sesión</button>
     </form>
   </div>
 </nav>
+
 
 <header class="hero-section">
         <div class="container text-center text-white">
