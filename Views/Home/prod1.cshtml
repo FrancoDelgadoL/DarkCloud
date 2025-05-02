@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Producto 1</title>
+</head>
+<body class="text-white" style="background-color: rgb(2, 2, 2);">
+    <nav class="navbar navbar-dark bg-dark px-4">
+        <a class="navbar-brand d-flex align-items-center" href="#">
+            <img src="/images/dark-cloud-logo.jpeg" width="40" height="40" class="d-inline-block align-top me-2" alt="Dark Cloud Logo">
+            <span>DARK CLOUD</span>
+        </a>
+
+        
+        <div class="mx-auto d-flex">
+            <form class="d-flex" role="search">
+            <input class="form-control me-2" type="search" placeholder="Buscar juegos..." aria-label="Buscar">
+            <button class="btn btn-outline-light" type="submit">Buscar</button>
+            </form>
+        </div>
+
+        <div class="ms-auto d-flex align-items-center">
+            <a class="nav-link text-white me-3" href="#">PRODUCTOS</a>
+            <form asp-controller="Home" asp-action="login" method="get" class="mb-0">
+            <button class="btn btn-light btn-sm" type="submit">Iniciar Sesión</button>
+            </form>
+        </div>
+    </nav>
+  <div class="container my-5">
+    <div class="row">
+      <!-- Imagen del videojuego -->
+      <div class="col-md-6 text-center">
+        <img src="/images/CyberPunk.jpg" alt="producto 1" class="img-fluid" style="max-width: 400px;">
+      </div>
+
+      <div class="col-md-6">
+        <h2 class="mb-3">Nombre del Videojuego</h2>
+        <p><del>$199.90</del> <span class="fs-4 text-info">$100</span></p>
+        <p><strong>Disponibilidad:</strong> En Stock</p>
+        <p><strong>SKU:</strong> 123456</p>
+        <button class="btn text-black" style="background-color: rgb(0, 199, 190);">Añadir al carrito</button>
+        <div class="mt-3">
+          <p><i>Disponible en tiendas: Lima, Perú</i></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-5">
+      <ul class="nav nav-tabs" id="gameTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="desc-tab" data-bs-toggle="tab" data-bs-target="#desc" type="button" role="tab">Descripción</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">Detalles Técnicos</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">Reseñas</button>
+        </li>
+      </ul>
+      <div class="tab-content p-3" id="gameTabContent" style="background-color: rgb(39, 69, 80);">
+        <div class="tab-pane fade show active" id="desc" role="tabpanel">
+          <p>Tu leyenda empieza aquí</p>
+          <p>Ponte en la piel de V, merc ciberpunk a sueldo, y haz todo lo que sea necesario para hacerte un nombre en Night City, una megalópolis obsesionada con el poder, el glamur y las modificaciones corporales. Aquí nacen las leyendas. ¿Cuál será la tuya?</p>
+        </div>
+        <div class="tab-pane fade" id="info" role="tabpanel">
+          <ul>
+            <li>Plataforma: PS4 / Xbox / PC</li>
+            <li>Género: Acción / Aventura</li>
+            <li>Modo: Un jugador / Multijugador</li>
+            <li>Idioma: Español, Inglés</li>
+          </ul>
+        </div>
+        <div class="tab-pane fade" id="reviews" role="tabpanel">
+          <p>No hay reseñas aún. ¡Sé el primero en comentar!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

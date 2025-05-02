@@ -30,6 +30,11 @@ public class HomeController : Controller
         return View();
     }
 
+    public IActionResult Prod1()
+    {
+        return View();
+    }
+
     public IActionResult Privacy()
     {
         return View();

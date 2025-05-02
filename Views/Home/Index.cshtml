@@ -9,7 +9,7 @@
     <span>DARK CLOUD</span>
   </a>
 
-  <!-- Barra de búsqueda centrada -->
+  
   <div class="mx-auto d-flex">
     <form class="d-flex" role="search">
       <input class="form-control me-2" type="search" placeholder="Buscar juegos..." aria-label="Buscar">
@@ -17,7 +17,6 @@
     </form>
   </div>
 
-  <!-- Enlaces y botón a la derecha -->
   <div class="ms-auto d-flex align-items-center">
     <a class="nav-link text-white me-3" href="#">PRODUCTOS</a>
     <form asp-controller="Home" asp-action="login" method="get" class="mb-0">
@@ -44,7 +43,8 @@
                 <div class="card-body text-white" style="background-color: rgb(39, 69, 80);">
                     <h5 class="card-title">Producto 1</h5>
                     <p class="card-text">Precio: $100</p>
-                    <a href="#" class="btn text-black w-100" style="background-color: rgb(0, 199, 190);">Comprar</a>
+                    <a asp-controller="Home" asp-action="prod1" style="background-color: rgb(0, 199, 190);" ;">Comprar</a>  
+        
                 </div>
             </div>
         </div>
