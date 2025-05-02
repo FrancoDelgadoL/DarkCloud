@@ -24,8 +24,9 @@ public class HomeController : Controller
         return View();
     }
 
-    public IActionResult Register()
+    public IActionResult Registrar()
     {
+        ViewData["OcultarFooter"] = true;
         return View();
     }
 
