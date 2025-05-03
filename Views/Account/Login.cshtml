@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Cuenta - Dark Cloud</title>
+    <title>Iniciar Sesión - Dark Cloud</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
     <style>
@@ -36,7 +36,7 @@
             margin-right: 0.5rem;
             color: #00aeef;
         }
-        .register-container {
+        .login-container {
             max-width: 400px;
             margin: auto;
             padding: 2rem;
@@ -45,28 +45,28 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
             color: #f5f5f5;
         }
-        .register-container h2 {
+        .login-container h2 {
             text-align: center;
             margin-bottom: 1.5rem;
             color: #00aeef;
         }
-        .register-container .form-label {
+        .login-container .form-label {
             color: #f5f5f5;
         }
-        .register-container .input-group {
+        .login-container .input-group {
             margin-bottom: 1rem;
         }
-        .register-container .input-group-text {
+        .login-container .input-group-text {
             background-color: #333;
             border: none;
             color: #00aeef;
         }
-        .register-container .form-control {
+        .login-container .form-control {
             background-color: #2a2a2a;
             border: none;
             color: #f5f5f5;
         }
-        .register-container button {
+        .login-container button {
             background-color: #00aeef;
             border: none;
             padding: 0.75rem;
@@ -77,7 +77,7 @@
             width: 100%;
             transition: background-color 0.3s ease;
         }
-        .register-container button:hover {
+        .login-container button:hover {
             background-color: #007bbf;
         }
         footer {
@@ -103,27 +103,20 @@
             <i class="fas fa-gamepad"></i> DARK CLOUD
         </a>
     </nav>
-    <div class="register-container">
-        <h2>Registrar Cuenta</h2>
+    <div class="login-container">
+        <h2>Iniciar Sesión</h2>
         <form>
             <div class="input-group mb-3">
                 <span class="input-group-text"><i class="fas fa-user"></i></span>
-                <input type="text" class="form-control" placeholder="Nombre" required>
-            </div>
-            <div class="input-group mb-3">
-                <span class="input-group-text"><i class="fas fa-user"></i></span>
-                <input type="text" class="form-control" placeholder="Apellido" required>
-            </div>
-            <div class="input-group mb-3">
-                <span class="input-group-text"><i class="fas fa-user-circle"></i></span>
                 <input type="text" class="form-control" placeholder="Usuario" required>
             </div>
             <div class="input-group mb-3">
                 <span class="input-group-text"><i class="fas fa-lock"></i></span>
                 <input type="password" class="form-control" placeholder="Contraseña" required>
             </div>
-            <button type="submit">Crear Cuenta</button>
+            <button type="submit">Entrar</button>
         </form>
+        <p class="text-center mt-3">¿No tienes una cuenta? <a href="/Account/Register" style="color: #007bff;">Regístrate aquí</a></p>
     </div>
     <footer>
         &copy; 2025 - DarkCloud. Todos los derechos reservados.
