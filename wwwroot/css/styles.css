@@ -1,23 +1,25 @@
 /* Estilos generales */
 body {
   font-family: Arial, sans-serif;
-  background: linear-gradient(to bottom, #2c2c2c, #000);
+  background: linear-gradient(to bottom, #1a1a1a, #000);
   color: white;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  margin-left: 630px;
+  margin: 0;
 }
 
 /* Contenedor del login */
 .login-container {
-  background: #1a1a1a;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
   padding: 30px;
+  background: #222;
   border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
   text-align: center;
-  width: 320px;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
 
 /* Estilos del logo y el título */
@@ -54,15 +56,41 @@ body {
 /* Botón de acceso */
 button {
   width: 100%;
-  background: #00aeef;
+  background: #007bff;
   border: none;
   color: white;
   padding: 12px;
   font-size: 18px;
   border-radius: 5px;
   cursor: pointer;
+  transition: background 0.3s ease;
 }
 
 button:hover {
-  background: #008dcf;
+  background: #0056b3;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  margin-top: auto;
+  width: 100%;
+  background-color: #222;
+  color: white;
+  padding: 20px 0;
+}
+
+footer p {
+  margin: 0;
+}
+
+/* Ajustes específicos para login y registro */
+.login-page, .register-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.login-page footer, .register-page footer {
+  margin-top: auto;
 }

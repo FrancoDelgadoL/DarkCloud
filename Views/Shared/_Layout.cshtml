@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/DarkCloud.styles.css" asp-append-version="true" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     
@@ -19,37 +20,39 @@
     </div>
     @if (!(ViewData["OcultarFooter"] as bool? ?? false))
     {
-    <footer class="footer bg-dark text-white py-4">
-    <div class="container">
+    <footer class="bg-dark text-white py-5">
+      <div class="container">
         <div class="row">
-            <!-- Información de la tienda -->
-            <div class="col-md-4">
-                <h5>Sobre DarkCloud</h5>
-                <p>Tu tienda de videojuegos favorita. Encuentra los mejores títulos, ofertas y accesorios para gamers.</p>
-            </div>
-            <!-- Enlaces rápidos -->
-            <div class="col-md-4">
-                <h5>Enlaces rápidos</h5>
-                <ul class="list-unstyled">
-                    <li><a class="text-white" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a></li>
-                    <li><a class="text-white" asp-area="" asp-controller="Home" asp-action="Privacy">Política de privacidad</a></li>
-                    <li><a class="text-white" href="#">Términos y condiciones</a></li>
-                </ul>
-            </div>
-            <!-- Contacto -->
-            <div class="col-md-4">
-                <h5>Contáctanos</h5>
-                <p>Email: <a class="text-white" href="mailto:contacto@darkcloud.com">dc@darkcloud.com</a></p>
-                <p>Teléfono: Vivo te crees para pedir numero no?</p>
-                <p>Dirección: Aun no tenemos tiendita hijitoC</p>
-            </div>
+          <!-- Información de la tienda -->
+          <div class="col-md-4">
+            <h5>Sobre DarkCloud</h5>
+            <p>Tu tienda de videojuegos favorita. Encuentra los mejores títulos, ofertas y accesorios para gamers.</p>
+            <p>"Explora, juega y domina"</p>
+          </div>
+          <!-- Enlaces rápidos -->
+          <div class="col-md-4">
+            <h5>Enlaces rápidos</h5>
+            <ul class="list-unstyled">
+              <li><a class="text-white" href="#catalogo">Catálogo</a></li>
+              <li><a class="text-white" href="#">Ofertas</a></li>
+              <li><a class="text-white" href="#">Novedades</a></li>
+              <li><a class="text-white" href="#">Contacto</a></li>
+            </ul>
+          </div>
+          <!-- Contacto -->
+          <div class="col-md-4">
+            <h5>Contáctanos</h5>
+            <p>Email: <a class="text-white" href="mailto:contacto@darkcloud.com">contacto@darkcloud.com</a></p>
+            <p>Teléfono: +1 800 123 456</p>
+            <p>Dirección: Calle Gamer 123, Ciudad Virtual</p>
+          </div>
         </div>
-        <div class="text-center mt-3">
-            <p>&copy; 2025 - DarkCloud. Todos los derechos reservados.</p>
+        <div class="text-center mt-4">
+          <p>&copy; 2025 - DarkCloud. Todos los derechos reservados.</p>
         </div>
-    </div>
-</footer>
-}
+      </div>
+    </footer>
+    }
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

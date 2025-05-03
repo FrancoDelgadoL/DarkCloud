@@ -8,6 +8,15 @@ html {
   }
 }
 
+/* Animación de degradado para el fondo */
+@keyframes gradient-animation {
+  0% { background: linear-gradient(to bottom, #ff7eb3, #ff758c); }
+  25% { background: linear-gradient(to bottom, #758cff, #7eafff); }
+  50% { background: linear-gradient(to bottom, #7effa1, #75ffb3); }
+  75% { background: linear-gradient(to bottom, #ffeb75, #ffb375); }
+  100% { background: linear-gradient(to bottom, #ff7eb3, #ff758c); }
+}
+
 .hero-section {
   background: url('/images/header 4.jpg') no-repeat center center/cover;
   height: 50vh; /* Ajusta la altura completa de la pantalla */
@@ -19,6 +28,8 @@ html {
     top: 0;
     width: 100%;
     background-color: #111;
+  animation: gradient-animation 10s infinite;
+  background-size: 400% 400%;
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
