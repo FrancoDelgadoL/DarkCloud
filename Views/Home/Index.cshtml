@@ -1,6 +1,8 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
 
 <body class="text-white" style="background-color: #121212; font-family: 'Roboto', sans-serif;">
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
@@ -38,26 +40,29 @@
   </div>
 </nav>
 
-<header class="hero-section text-center text-white py-5">
-  <div class="container">
-    <h1 class="display-4 fw-bold">DARK CLOUD</h1>
-    <div id="hero-carousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
-      <div class="carousel-inner">
-        <div class="carousel-item active">
-          <p class="lead">¡Bienvenido a tu mundo gamer! "Explora, juega y domina"</p>
-        </div>
-        <div class="carousel-item">
-          <p class="lead">"Descubre los mejores títulos y ofertas"</p>
-        </div>
-        <div class="carousel-item">
-          <p class="lead">"Tu aventura gamer comienza aquí"</p>
-        </div>
-        <div class="carousel-item">
-          <p class="lead">"Juega, explora y conquista"</p>
+<header class="hero-section text-white py-5">
+  <div class="container d-flex align-items-center justify-content-between flex-wrap flex-md-nowrap" style="min-height: 50vh;">
+    <div class="hero-text text-start" style="flex:1; min-width:260px; max-width:500px;">
+      <h1 class="display-4 fw-bold">DARK CLOUD</h1>
+      <div id="hero-carousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <p class="lead">¡Bienvenido a tu mundo gamer! "Explora, juega y domina"</p>
+          </div>
+          <div class="carousel-item">
+            <p class="lead">"Descubre los mejores títulos y ofertas"</p>
+          </div>
+          <div class="carousel-item">
+            <p class="lead">"Tu aventura gamer comienza aquí"</p>
+          </div>
+          <div class="carousel-item">
+            <p class="lead">"Juega, explora y conquista"</p>
+          </div>
         </div>
       </div>
+      <a href="#catalogo" class="btn btn-primary btn-lg mt-3">Explorar Catálogo</a>
     </div>
-    <a href="#catalogo" class="btn btn-primary btn-lg mt-3">Explorar Catálogo</a>
+    <div class="hero-bg-carousel" style="flex:1; min-width:260px; max-width:600px; height:350px; position:relative;"></div>
   </div>
 </header>
 
@@ -100,7 +105,9 @@
               <span id="count-@i" class="mx-2">0</span>
               <button class="btn btn-outline-secondary btn-sm ms-2" onclick="increaseCount(@i)">+</button>
             </div>
-            <a href="#" class="btn btn-primary mt-auto">Añadir al carrito</a>
+            <a href="@Url.Action(SignInManager.IsSignedIn(User) ? "AddToCart" : "Login", "Account")" class="btn btn-primary mt-auto" onclick="return SignInManager.IsSignedIn(User) ? true : alert('Primero debes iniciar sesión');">
+                Añadir al carrito
+            </a>
           </div>
         </div>
       </div>

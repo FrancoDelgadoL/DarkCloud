@@ -8,28 +8,112 @@ html {
   }
 }
 
-/* Animación de degradado para el fondo */
-@keyframes gradient-animation {
-  0% { background: linear-gradient(to bottom, #ff7eb3, #ff758c); }
-  25% { background: linear-gradient(to bottom, #758cff, #7eafff); }
-  50% { background: linear-gradient(to bottom, #7effa1, #75ffb3); }
-  75% { background: linear-gradient(to bottom, #ffeb75, #ffb375); }
-  100% { background: linear-gradient(to bottom, #ff7eb3, #ff758c); }
+/* Carrusel de imágenes de fondo con desintegración */
+#background-carousel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  overflow: hidden;
+}
+#background-carousel .bg-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1s linear;
+  will-change: opacity, filter, clip-path;
+}
+#background-carousel .bg-image.active {
+  opacity: 1;
+  z-index: 1;
+}
+@keyframes disintegrate {
+  0% {
+    opacity: 1;
+    filter: blur(0px);
+    clip-path: inset(0% 0% 0% 0%);
+  }
+  60% {
+    opacity: 0.7;
+    filter: blur(2px);
+    clip-path: inset(10% 10% 10% 10%);
+  }
+  100% {
+    opacity: 0;
+    filter: blur(12px);
+    clip-path: inset(50% 50% 50% 50%);
+  }
+}
+#background-carousel .bg-image.disintegrate {
+  animation: disintegrate 1s forwards;
 }
 
 .hero-section {
-  background: url('/images/header 4.jpg') no-repeat center center/cover;
-  height: 50vh; /* Ajusta la altura completa de la pantalla */
+  position: relative;
+  overflow: hidden;
+  background: none !important;
+}
+.hero-section .container {
+  min-height: 50vh;
+}
+.hero-bg-carousel {
+  position: relative;
+  width: 100%;
+  height: 350px;
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
+}
+.hero-bg-carousel .bg-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1s linear;
+  will-change: opacity, filter, clip-path;
+}
+.hero-bg-carousel .bg-image.active {
+  opacity: 1;
+  z-index: 1;
+}
+@keyframes disintegrate {
+  0% {
+    opacity: 1;
+    filter: blur(0px);
+    clip-path: inset(0% 0% 0% 0%);
+  }
+  60% {
+    opacity: 0.7;
+    filter: blur(2px);
+    clip-path: inset(10% 10% 10% 10%);
+  }
+  100% {
+    opacity: 0;
+    filter: blur(12px);
+    clip-path: inset(50% 50% 50% 50%);
+  }
+}
+.hero-bg-carousel .bg-image.disintegrate {
+  animation: disintegrate 1s forwards;
+}
+.hero-text {
+  z-index: 2;
+}
+.hero-section > .container, .hero-section > *:not(.hero-bg-carousel) {
   position: relative;
-    top: 0;
-    width: 100%;
-    background-color: #111;
-  animation: gradient-animation 10s infinite;
-  background-size: 400% 400%;
+  z-index: 1;
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
