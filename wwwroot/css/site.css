@@ -127,6 +127,37 @@ html {
 
 body {
   margin-bottom: 60px;
+  background: #181a1b !important;
+  color: #fff;
+}
+
+.container, .container-fluid {
+  background: transparent !important;
+}
+
+/* Ajuste para alertas y secciones claras */
+.alert-info {
+  background: #23272b !important;
+  color: #fff !important;
+  border: none;
+}
+
+/* Navbar oscuro con iconos */
+.navbar-dark.bg-dark {
+  background: #181a1b !important;
+}
+
+/* Opcional: dropdown-menu oscuro */
+.dropdown-menu {
+  background: #23272b;
+  color: #fff;
+}
+.dropdown-item {
+  color: #fff;
+}
+.dropdown-item:hover, .dropdown-item:focus {
+  background: #343a40;
+  color: #fff;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
@@ -136,4 +167,119 @@ body {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
+}
+
+/* Estilos básicos para el panel de administración */
+.admin-panel {
+  min-height: 80vh;
+}
+.admin-sidebar {
+  min-width: 220px;
+  background: #23272b;
+  border-radius: 10px 0 0 10px;
+}
+.admin-sidebar .nav-link.active, .admin-sidebar .nav-link:hover {
+  background: #343a40;
+  border-radius: 5px;
+}
+@media (max-width: 768px) {
+  .admin-panel {
+    flex-direction: column;
+  }
+  .admin-sidebar {
+    min-width: 100%;
+    border-radius: 10px 10px 0 0;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Estilos para las tarjetas de productos en el Home */
+.card.h-100.shadow-sm {
+  min-height: 420px;
+  max-width: 340px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  background: #181a1b;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.card.h-100.shadow-sm:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+}
+.card-img-top {
+  max-height: 200px;
+  object-fit: contain;
+  border-radius: 12px 12px 0 0;
+  background: #23272b;
+  padding: 12px;
+}
+.card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fff;
+}
+.card-text {
+  color: #d1d1d1;
+  font-size: 0.98rem;
+}
+.btn-primary.mt-auto {
+  border-radius: 8px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+@media (max-width: 768px) {
+  .card.h-100.shadow-sm {
+    min-height: 350px;
+    max-width: 100%;
+  }
+  .card-img-top {
+    max-height: 140px;
+  }
+}
+
+/* Animación arcoíris para el logo del navbar */
+.logo-multicolor span {
+  display: inline-block;
+  font-weight: bold;
+  font-size: 1.5rem;
+  animation: rainbow 2s linear infinite;
+}
+.logo-multicolor span:nth-child(1) { animation-delay: 0s; }
+.logo-multicolor span:nth-child(2) { animation-delay: 0.2s; }
+.logo-multicolor span:nth-child(3) { animation-delay: 0.4s; }
+.logo-multicolor span:nth-child(4) { animation-delay: 0.6s; }
+.logo-multicolor span:nth-child(5) { animation-delay: 0.8s; }
+.logo-multicolor span:nth-child(6) { animation-delay: 1.0s; }
+.logo-multicolor span:nth-child(7) { animation-delay: 1.2s; }
+.logo-multicolor span:nth-child(8) { animation-delay: 1.4s; }
+.logo-multicolor span:nth-child(9) { animation-delay: 1.6s; }
+
+@keyframes rainbow {
+  0%   { color: #ff5252; }
+  12%  { color: #ffd600; }
+  25%  { color: #69f0ae; }
+  37%  { color: #40c4ff; }
+  50%  { color: #7c4dff; }
+  62%  { color: #ff4081; }
+  75%  { color: #ffab40; }
+  87%  { color: #00e676; }
+  100% { color: #ff5252; }
+}
+
+/* Mejorar contraste de iconos y labels en formularios de login y registro */
+.form-label.text-white, .input-group-text.bg-dark.text-white {
+  color: #b0b3b8 !important; /* Gris claro, mejor contraste sobre fondo oscuro */
+}
+.input-group-text.bg-dark.text-white i {
+  color: #b0b3b8 !important;
+}
+.form-label.text-white i {
+  color: #b0b3b8 !important;
+}
+/* Mejorar contraste de placeholder */
+.form-control.bg-dark::placeholder {
+  color: #b0b3b8 !important;
+  opacity: 1;
 }

@@ -1,0 +1,124 @@
+@model DarkCloud.Models.Producto
+@{
+    ViewData["Title"] = "Agregar Producto";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="admin-panel d-flex">
+    <nav class="admin-sidebar bg-dark text-white p-4" style="min-width:220px; min-height:80vh;">
+        <h4 class="mb-4">Admin</h4>
+        <ul class="nav flex-column">
+            <li class="nav-item mb-2"><a class="nav-link text-white" href="/Administrador">Dashboard</a></li>
+            <li class="nav-item mb-2"><a class="nav-link text-white active" href="/Administrador/Productos">Productos</a></li>
+            <li class="nav-item mb-2"><a class="nav-link text-white" href="/Administrador/Usuarios">Usuarios</a></li>
+            <li class="nav-item mb-2"><a class="nav-link text-white" href="/Administrador/HomeHeroConfig">Config. Home</a></li>
+            <li class="nav-item mb-2"><a class="nav-link text-white" href="/">Volver a la tienda</a></li>
+        </ul>
+    </nav>
+    <main class="flex-fill p-4">
+        <h2>Agregar Producto</h2>
+        <form asp-action="AgregarProducto" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label asp-for="Nombre" class="form-label">Nombre</label>
+                <input asp-for="Nombre" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Descripcion" class="form-label">Descripción</label>
+                <textarea asp-for="Descripcion" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Genero" class="form-label">Género</label>
+                <select asp-for="Genero" class="form-select" required>
+                    <option value="">Selecciona un género</option>
+                    <option>Acción</option>
+                    <option>Aventura</option>
+                    <option>Shooter (FPS/TPS)</option>
+                    <option>Rol (RPG)</option>
+                    <option>Estrategia</option>
+                    <option>Simulación</option>
+                    <option>Deportes</option>
+                    <option>Carreras</option>
+                    <option>Terror / Supervivencia</option>
+                    <option>Puzzle / Lógica</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Plataforma" class="form-label">Plataforma</label>
+                <select asp-for="Plataforma" class="form-select" required>
+                    <option value="">Selecciona una plataforma</option>
+                    <option>PC (Steam, Epic Games, Origin)</option>
+                    <option>PlayStation (PS4, PS5)</option>
+                    <option>Xbox (One, Series S/X)</option>
+                    <option>Nintendo (Switch, 3DS)</option>
+                    <option>Móviles (Android / iOS)</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label asp-for="TipoProducto" class="form-label">Tipo de Producto</label>
+                <select asp-for="TipoProducto" class="form-select" required>
+                    <option value="">Selecciona un tipo</option>
+                    <option>Juegos completos</option>
+                    <option>Expansiones y DLCs</option>
+                    <option>Juegos en acceso anticipado</option>
+                    <option>Juegos gratuitos (Free-to-Play)</option>
+                    <option>Tarjetas de regalo / Recargas</option>
+                    <option>Accesorios (mandos, auriculares, etc.)</option>
+                    <option>Consolas</option>
+                    <option>Merchandising (camisetas, figuras, etc.)</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label asp-for="ModoJuego" class="form-label">Modo de Juego</label>
+                <select asp-for="ModoJuego" class="form-select" required>
+                    <option value="">Selecciona un modo</option>
+                    <option>Un jugador (Single Player)</option>
+                    <option>Multijugador online</option>
+                    <option>Cooperativo local</option>
+                    <option>Competitivo (PvP)</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label asp-for="ClasificacionEdad" class="form-label">Clasificación de Edad</label>
+                <select asp-for="ClasificacionEdad" class="form-select" required>
+                    <option value="">Selecciona una clasificación</option>
+                    <option>Todos (E / PEGI 3)</option>
+                    <option>Mayores de 10 años</option>
+                    <option>Adolescente (T / PEGI 12)</option>
+                    <option>Adulto (M / PEGI 16-18)</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label asp-for="CategoriasEspeciales" class="form-label">Categorías Especiales</label>
+                <select asp-for="CategoriasEspeciales" class="form-select" multiple>
+                    <option>Novedades</option>
+                    <option>Más vendidos</option>
+                    <option>Juegos indie</option>
+                    <option>En oferta / descuentos</option>
+                    <option>Realidad virtual (VR)</option>
+                </select>
+                <small class="form-text text-muted">Mantén presionada Ctrl (Windows) o Cmd (Mac) para seleccionar varias.</small>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Precio" class="form-label">Precio Oferta</label>
+                <input asp-for="Precio" class="form-control" type="number" step="0.01" required />
+            </div>
+            <div class="mb-3">
+                <label asp-for="PrecioReal" class="form-label">Precio Real</label>
+                <input asp-for="PrecioReal" class="form-control" type="number" step="0.01" />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Descuento" class="form-label">Descuento (%)</label>
+                <input asp-for="Descuento" class="form-control" type="number" step="0.01" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Seleccionar imagen</label>
+                <input type="file" name="ImagenArchivo" class="form-control" accept="image/*" />
+            </div>
+            <div class="form-check mb-3">
+                <input asp-for="EsOferta" class="form-check-input" type="checkbox" />
+                <label asp-for="EsOferta" class="form-check-label">¿Es oferta?</label>
+            </div>
+            <button type="submit" class="btn btn-success">Guardar</button>
+            <a href="/Administrador/Productos" class="btn btn-secondary ms-2">Cancelar</a>
+        </form>
+    </main>
+</div>

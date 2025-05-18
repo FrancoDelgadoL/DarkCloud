@@ -1,132 +1,42 @@
 @{
-    Layout = null;
+    ViewData["Title"] = "Registrar Cuenta";
+    Layout = "../Shared/_Layout.cshtml";
 }
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Cuenta - Dark Cloud</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/styles.css">
-    <style>
-        body {
-            background: linear-gradient(to bottom, #0f0f0f, #1a1a1a);
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-lg p-4" style="background:#181a1b; min-width:340px; max-width:400px; width:100%; border-radius:18px; border:1px solid #333;">
+        <h2 class="text-center mb-4" style="color:#ffd600; font-weight:700; letter-spacing:1px;">Registrar Cuenta</h2>
+        @if (TempData["Error"] != null) {
+            <div class="alert alert-danger">@TempData["Error"]</div>
         }
-        .navbar {
-            background-color: #121212;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        @if (TempData["Mensaje"] != null) {
+            <div class="alert alert-success">@TempData["Mensaje"]</div>
         }
-        .navbar-brand {
-            color: #f5f5f5;
-            font-size: 1.8rem;
-            font-weight: bold;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-        }
-        .navbar-brand i {
-            margin-right: 0.5rem;
-            color: #00aeef;
-        }
-        .register-container {
-            max-width: 400px;
-            margin: auto;
-            padding: 2rem;
-            background: #1e1e1e;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            color: #f5f5f5;
-        }
-        .register-container h2 {
-            text-align: center;
-            margin-bottom: 1.5rem;
-            color: #00aeef;
-        }
-        .register-container .form-label {
-            color: #f5f5f5;
-        }
-        .register-container .input-group {
-            margin-bottom: 1rem;
-        }
-        .register-container .input-group-text {
-            background-color: #333;
-            border: none;
-            color: #00aeef;
-        }
-        .register-container .form-control {
-            background-color: #2a2a2a;
-            border: none;
-            color: #f5f5f5;
-        }
-        .register-container button {
-            background-color: #00aeef;
-            border: none;
-            padding: 0.75rem;
-            color: white;
-            font-size: 1rem;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-            transition: background-color 0.3s ease;
-        }
-        .register-container button:hover {
-            background-color: #007bbf;
-        }
-        footer {
-            background-color: #121212;
-            color: #f5f5f5;
-            text-align: center;
-            padding: 1rem 0;
-            margin-top: auto;
-            width: 100%;
-        }
-        footer a {
-            color: #00aeef;
-            text-decoration: none;
-        }
-        footer a:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar">
-        <a href="/" class="navbar-brand">
-            <i class="fas fa-gamepad"></i> DARK CLOUD
-        </a>
-    </nav>
-    <div class="register-container">
-        <h2>Registrar Cuenta</h2>
-        <form method="post" action="/Account/Register">
-            <div class="input-group mb-3">
-                <span class="input-group-text"><i class="fas fa-user"></i></span>
-                <input type="text" class="form-control" name="nombre" placeholder="Nombre" required>
+        <form method="post" action="/Account/Register" autocomplete="on">
+            <div class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text bg-dark text-secondary border-0"><i class="fas fa-user"></i></span>
+                    <input id="reg-nombre" type="text" class="form-control bg-dark text-white border-0" name="nombre" placeholder="Nombre" required style="border:1px solid #444;" autocomplete="given-name">
+                </div>
             </div>
-            <div class="input-group mb-3">
-                <span class="input-group-text"><i class="fas fa-user"></i></span>
-                <input type="text" class="form-control" name="apellido" placeholder="Apellido" required>
+            <div class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text bg-dark text-secondary border-0"><i class="fas fa-user"></i></span>
+                    <input id="reg-apellido" type="text" class="form-control bg-dark text-white border-0" name="apellido" placeholder="Apellido" required style="border:1px solid #444;" autocomplete="family-name">
+                </div>
             </div>
-            <div class="input-group mb-3">
-                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                <input type="email" class="form-control" name="email" placeholder="Correo Electrónico" required>
+            <div class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text bg-dark text-secondary border-0"><i class="fas fa-envelope"></i></span>
+                    <input id="reg-email" type="email" class="form-control bg-dark text-white border-0" name="email" placeholder="Correo Electrónico" required style="border:1px solid #444;" autocomplete="email">
+                </div>
             </div>
-            <div class="input-group mb-3">
-                <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                <input type="password" class="form-control" name="password" placeholder="Contraseña" required>
+            <div class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text bg-dark text-secondary border-0"><i class="fas fa-lock"></i></span>
+                    <input id="reg-password" type="password" class="form-control bg-dark text-white border-0" name="password" placeholder="Contraseña" required style="border:1px solid #444;" autocomplete="new-password">
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Crear Cuenta</button>
+            <button type="submit" class="btn btn-warning w-100 fw-bold">Crear Cuenta</button>
         </form>
     </div>
-    <footer>
-        &copy; 2025 - DarkCloud. Todos los derechos reservados.
-    </footer>
-</body>
-</html>
+</div>

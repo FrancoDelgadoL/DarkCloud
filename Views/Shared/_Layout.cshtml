@@ -12,6 +12,161 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
+    <!-- Navbar DarkCloud con iconos -->
+    @{
+        var usuarioNombre = Context.Session.GetString("UsuarioNombre");
+        var usuarioRol = Context.Session.GetString("UsuarioRol");
+    }
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow">
+      <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center fw-bold" href="/">
+          <i class="fas fa-gamepad me-2"></i>
+          <span class="logo-multicolor">
+            <span style="color:#ff5252">D</span><span style="color:#ffd600">a</span><span style="color:#69f0ae">r</span><span style="color:#40c4ff">k</span><span style="color:#7c4dff">C</span><span style="color:#ff4081">l</span><span style="color:#ffab40">o</span><span style="color:#00e676">u</span><span style="color:#18ffff">d</span>
+          </span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            @if (string.IsNullOrEmpty(usuarioRol)) {
+              <li class="nav-item">
+                <a class="nav-link text-white" href="/">
+                  <i class="fas fa-home me-1"></i> Inicio
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-white" href="/Home/Catalogo">
+                  <i class="fas fa-th-large me-1"></i> Catálogo
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-white" href="/Home/Catalogo?tipo=Oferta">
+                  <i class="fas fa-tags me-1"></i> Ofertas
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-white" href="/Home/Catalogo?novedades=1">
+                  <i class="fas fa-bolt me-1"></i> Novedades
+                </a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-white" href="#" id="generosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fas fa-gamepad me-1"></i> Géneros
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="generosDropdown">
+                  <li><a class="dropdown-item" href="/Home/Catalogo?genero=Acción"><i class="fas fa-fist-raised me-1"></i> Acción</a></li>
+                  <li><a class="dropdown-item" href="/Home/Catalogo?genero=Aventura"><i class="fas fa-hat-wizard me-1"></i> Aventura</a></li>
+                  <li><a class="dropdown-item" href="/Home/Catalogo?genero=Deportes"><i class="fas fa-futbol me-1"></i> Deportes</a></li>
+                  <li><a class="dropdown-item" href="/Home/Catalogo?genero=RPG"><i class="fas fa-dice-d20 me-1"></i> RPG</a></li>
+                  <li><a class="dropdown-item" href="/Home/Catalogo?genero=Estrategia"><i class="fas fa-chess me-1"></i> Estrategia</a></li>
+                  <li><a class="dropdown-item" href="/Home/Catalogo?genero=Simulación"><i class="fas fa-cogs me-1"></i> Simulación</a></li>
+                </ul>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-white" href="#" id="plataformasDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fas fa-laptop me-1"></i> Plataformas
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="plataformasDropdown">
+                  <li><a class="dropdown-item" href="/Home/Catalogo?plataforma=PlayStation"><i class="fab fa-playstation me-1"></i> PlayStation</a></li>
+                  <li><a class="dropdown-item" href="/Home/Catalogo?plataforma=Xbox"><i class="fab fa-xbox me-1"></i> Xbox</a></li>
+                  <li><a class="dropdown-item" href="/Home/Catalogo?plataforma=Nintendo"><i class="fas fa-gamepad me-1"></i> Nintendo</a></li>
+                  <li><a class="dropdown-item" href="/Home/Catalogo?plataforma=PC"><i class="fas fa-desktop me-1"></i> PC</a></li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-white" href="/Account/Login">
+                  <i class="fas fa-sign-in-alt me-1"></i> Iniciar Sesión
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-white" href="/Account/Register">
+                  <i class="fas fa-user-plus me-1"></i> Registrarse
+                </a>
+              </li>
+            } else if (usuarioRol == "Cliente") {
+              <li class="nav-item">
+                <a class="nav-link text-white" href="/">
+                  <i class="fas fa-home me-1"></i> Inicio
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-white" href="/Home/Catalogo">
+                  <i class="fas fa-th-large me-1"></i> Catálogo
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-white" href="/Home/Catalogo?tipo=Oferta">
+                  <i class="fas fa-tags me-1"></i> Ofertas
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-white" href="/Home/Catalogo?novedades=1">
+                  <i class="fas fa-bolt me-1"></i> Novedades
+                </a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-white" href="#" id="generosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fas fa-gamepad me-1"></i> Géneros
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="generosDropdown">
+                  <li><a class="dropdown-item" href="/Home/Catalogo?genero=Acción"><i class="fas fa-fist-raised me-1"></i> Acción</a></li>
+                  <li><a class="dropdown-item" href="/Home/Catalogo?genero=Aventura"><i class="fas fa-hat-wizard me-1"></i> Aventura</a></li>
+                  <li><a class="dropdown-item" href="/Home/Catalogo?genero=Deportes"><i class="fas fa-futbol me-1"></i> Deportes</a></li>
+                  <li><a class="dropdown-item" href="/Home/Catalogo?genero=RPG"><i class="fas fa-dice-d20 me-1"></i> RPG</a></li>
+                  <li><a class="dropdown-item" href="/Home/Catalogo?genero=Estrategia"><i class="fas fa-chess me-1"></i> Estrategia</a></li>
+                  <li><a class="dropdown-item" href="/Home/Catalogo?genero=Simulación"><i class="fas fa-cogs me-1"></i> Simulación</a></li>
+                </ul>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-white" href="#" id="plataformasDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fas fa-laptop me-1"></i> Plataformas
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="plataformasDropdown">
+                  <li><a class="dropdown-item" href="/Home/Catalogo?plataforma=PlayStation"><i class="fab fa-playstation me-1"></i> PlayStation</a></li>
+                  <li><a class="dropdown-item" href="/Home/Catalogo?plataforma=Xbox"><i class="fab fa-xbox me-1"></i> Xbox</a></li>
+                  <li><a class="dropdown-item" href="/Home/Catalogo?plataforma=Nintendo"><i class="fas fa-gamepad me-1"></i> Nintendo</a></li>
+                  <li><a class="dropdown-item" href="/Home/Catalogo?plataforma=PC"><i class="fas fa-desktop me-1"></i> PC</a></li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-white" href="#">
+                  <i class="fas fa-shopping-cart me-1"></i> Carrito
+                </a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-white" href="#" id="usuarioDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fas fa-user me-1"></i> @usuarioNombre
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="usuarioDropdown">
+                  <li><a class="dropdown-item" href="/Account/Logout"><i class="fas fa-sign-out-alt me-1"></i> Cerrar sesión</a></li>
+                  <li><a class="dropdown-item" href="/Account/Login"><i class="fas fa-exchange-alt me-1"></i> Cambiar de cuenta</a></li>
+                </ul>
+              </li>
+            } else if (usuarioRol == "Administrador") {
+              <li class="nav-item">
+                <a class="nav-link text-white" href="/Administrador">
+                  <i class="fas fa-user-shield me-1"></i> Panel Admin
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-white" href="/Account/Logout">
+                  <i class="fas fa-sign-out-alt me-1"></i> Cerrar sesión
+                </a>
+              </li>
+            }
+          </ul>
+          @if (usuarioRol == "Cliente" || string.IsNullOrEmpty(usuarioRol)) {
+          <form class="d-flex ms-3" role="search" method="get" action="/Home/Catalogo">
+            <input class="form-control me-2" type="search" name="q" placeholder="Buscar..." aria-label="Buscar" value="@ViewData["Busqueda"]">
+            <button class="btn btn-outline-light" type="submit"><i class="fas fa-search"></i></button>
+          </form>
+          }
+        </div>
+      </div>
+    </nav>
+    <!-- Fin Navbar -->
     <div id="background-carousel"></div>
     <div class="container">
         <main role="main" class="pb-3">
@@ -33,9 +188,9 @@
           <div class="col-md-4">
             <h5>Enlaces rápidos</h5>
             <ul class="list-unstyled">
-              <li><a class="text-white" href="#catalogo">Catálogo</a></li>
-              <li><a class="text-white" href="#">Ofertas</a></li>
-              <li><a class="text-white" href="#">Novedades</a></li>
+              <li><a class="text-white" href="/Home/Catalogo">Catálogo</a></li>
+              <li><a class="text-white" href="/Home/Catalogo?tipo=Oferta">Ofertas</a></li>
+              <li><a class="text-white" href="/Home/Catalogo?novedades=1">Novedades</a></li>
               <li><a class="text-white" href="#">Contacto</a></li>
             </ul>
           </div>
@@ -54,9 +209,20 @@
     </footer>
     }
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+      // Inicialización robusta de Bootstrap para dropdowns en todas las páginas
+      function initDropdowns() {
+        document.querySelectorAll('.dropdown-toggle').forEach(function (el) {
+          if (!el._dropdownInstance) {
+            el._dropdownInstance = new bootstrap.Dropdown(el);
+          }
+        });
+      }
+      document.addEventListener('DOMContentLoaded', initDropdowns);
+      document.addEventListener('htmx:afterSwap', initDropdowns); // por si usas htmx/ajax
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
