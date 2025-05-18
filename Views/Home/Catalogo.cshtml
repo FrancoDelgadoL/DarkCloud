@@ -1,0 +1,122 @@
+@model IEnumerable<DarkCloud.Models.Producto>
+@{
+    ViewData["Title"] = "Catálogo";
+}
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+<div class="container-fluid mt-5">
+  <div class="row">
+    <!-- Sidebar de filtros -->
+    <aside class="col-lg-3 mb-4">
+      <div class="card shadow-sm p-3 bg-dark text-white sticky-top" style="top:90px; border-radius:16px;">
+        <h4 class="mb-3"><i class="fas fa-filter me-2"></i>Filtrar</h4>
+        <!-- Filtros agrupados -->
+        <form method="get" action="/Home/Catalogo">
+          @{
+              var filtroGenero = ViewData["FiltroGenero"] as string;
+              var filtroPlataforma = ViewData["FiltroPlataforma"] as string;
+              var filtroTipo = ViewData["FiltroTipo"] as string;
+              var filtroModo = ViewData["FiltroModo"] as string;
+              var filtroClasificacion = ViewData["FiltroClasificacion"] as string;
+              var filtroCategoria = ViewData["FiltroCategoria"] as string;
+          }
+          <div class="mb-3">
+            <label class="form-label fw-bold">Género</label>
+            <select class="form-select bg-dark text-white" name="genero">
+              <option value="">Todos</option>
+              @if (filtroGenero == "Acción") { <option value="Acción" selected>Acción</option> } else { <option value="Acción">Acción</option> }
+              @if (filtroGenero == "Aventura") { <option value="Aventura" selected>Aventura</option> } else { <option value="Aventura">Aventura</option> }
+              @if (filtroGenero == "Deportes") { <option value="Deportes" selected>Deportes</option> } else { <option value="Deportes">Deportes</option> }
+              @if (filtroGenero == "RPG") { <option value="RPG" selected>RPG</option> } else { <option value="RPG">RPG</option> }
+              @if (filtroGenero == "Estrategia") { <option value="Estrategia" selected>Estrategia</option> } else { <option value="Estrategia">Estrategia</option> }
+              @if (filtroGenero == "Simulación") { <option value="Simulación" selected>Simulación</option> } else { <option value="Simulación">Simulación</option> }
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Plataforma</label>
+            <select class="form-select bg-dark text-white" name="plataforma">
+              <option value="">Todas</option>
+              @if (filtroPlataforma == "PlayStation") { <option value="PlayStation" selected>PlayStation</option> } else { <option value="PlayStation">PlayStation</option> }
+              @if (filtroPlataforma == "Xbox") { <option value="Xbox" selected>Xbox</option> } else { <option value="Xbox">Xbox</option> }
+              @if (filtroPlataforma == "Nintendo") { <option value="Nintendo" selected>Nintendo</option> } else { <option value="Nintendo">Nintendo</option> }
+              @if (filtroPlataforma == "PC") { <option value="PC" selected>PC</option> } else { <option value="PC">PC</option> }
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Tipo</label>
+            <select class="form-select bg-dark text-white" name="tipo">
+              <option value="">Todos</option>
+              @if (filtroTipo == "Videojuego") { <option value="Videojuego" selected>Videojuego</option> } else { <option value="Videojuego">Videojuego</option> }
+              @if (filtroTipo == "Consola") { <option value="Consola" selected>Consola</option> } else { <option value="Consola">Consola</option> }
+              @if (filtroTipo == "Accesorio") { <option value="Accesorio" selected>Accesorio</option> } else { <option value="Accesorio">Accesorio</option> }
+              @if (filtroTipo == "Coleccionable") { <option value="Coleccionable" selected>Coleccionable</option> } else { <option value="Coleccionable">Coleccionable</option> }
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Modo de juego</label>
+            <select class="form-select bg-dark text-white" name="modo">
+              <option value="">Todos</option>
+              @if (filtroModo == "Un jugador") { <option value="Un jugador" selected>Un jugador</option> } else { <option value="Un jugador">Un jugador</option> }
+              @if (filtroModo == "Multijugador") { <option value="Multijugador" selected>Multijugador</option> } else { <option value="Multijugador">Multijugador</option> }
+              @if (filtroModo == "Cooperativo") { <option value="Cooperativo" selected>Cooperativo</option> } else { <option value="Cooperativo">Cooperativo</option> }
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Clasificación</label>
+            <select class="form-select bg-dark text-white" name="clasificacion">
+              <option value="">Todas</option>
+              @if (filtroClasificacion == "E") { <option value="E" selected>E</option> } else { <option value="E">E</option> }
+              @if (filtroClasificacion == "T") { <option value="T" selected>T</option> } else { <option value="T">T</option> }
+              @if (filtroClasificacion == "M") { <option value="M" selected>M</option> } else { <option value="M">M</option> }
+              @if (filtroClasificacion == "A") { <option value="A" selected>A</option> } else { <option value="A">A</option> }
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Categoría especial</label>
+            <select class="form-select bg-dark text-white" name="categoria">
+              <option value="">Todas</option>
+              @if (filtroCategoria == "Edición especial") { <option value="Edición especial" selected>Edición especial</option> } else { <option value="Edición especial">Edición especial</option> }
+              @if (filtroCategoria == "Colección") { <option value="Colección" selected>Colección</option> } else { <option value="Colección">Colección</option> }
+              @if (filtroCategoria == "Liquidación") { <option value="Liquidación" selected>Liquidación</option> } else { <option value="Liquidación">Liquidación</option> }
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary w-100 mb-2"><i class="fas fa-search me-1"></i>Filtrar</button>
+          <a href="/Home/Catalogo" class="btn btn-secondary w-100"><i class="fas fa-times me-1"></i>Quitar Filtros</a>
+        </form>
+      </div>
+    </aside>
+    <!-- Catálogo de productos -->
+    <section class="col-lg-9">
+      <h2 class="mb-4 text-white">Catálogo de Productos</h2>
+      <div class="row">
+        @if (!Model.Any())
+        {
+          <div class="col-12">
+            <div class="alert alert-warning text-center mt-4" role="alert">
+              <i class="fas fa-exclamation-circle me-2"></i>No se encontraron productos que coincidan con tu búsqueda o filtros.
+            </div>
+          </div>
+        }
+        else
+        {
+          @foreach (var producto in Model)
+          {
+            <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+              <div class="card h-100 shadow-sm">
+                <img src="@producto.ImagenUrl" class="card-img-top" alt="@producto.Nombre">
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title">@producto.Nombre</h5>
+                  <p class="card-text">@producto.Descripcion</p>
+                  <p class="card-text fw-bold">S/ @producto.Precio</p>
+                  <a href="@Url.Action(SignInManager.IsSignedIn(User) ? "AddToCart" : "Login", "Account")" class="btn btn-primary mt-auto" onclick="return SignInManager.IsSignedIn(User) ? true : alert('Primero debes iniciar sesión');">
+                      Añadir al carrito
+                  </a>
+                </div>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </section>
+  </div>
+</div>

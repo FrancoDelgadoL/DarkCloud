@@ -1,111 +1,66 @@
-﻿@{
+﻿@model IEnumerable<DarkCloud.Models.Producto>
+@{
     ViewData["Title"] = "Home Page";
 }
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> SignInManager
-
-<body class="text-white" style="background-color: #121212; font-family: 'Roboto', sans-serif;">
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
-  <a class="navbar-brand d-flex align-items-center" href="#">
-    <i class="fas fa-gamepad me-2" style="font-size: 1.5rem;"></i>
-    <span style="font-weight: bold; font-size: 1.5rem;">DARK CLOUD</span>
-  </a>
-  <form class="d-flex ms-3" role="search">
-    <input class="form-control me-2" type="search" placeholder="Buscar productos..." aria-label="Buscar">
-    <button class="btn btn-outline-light" type="submit">Buscar</button>
-  </form>
-  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav ms-auto">
-      <li class="nav-item">
-        <a class="nav-link text-white" href="#"><i class="fas fa-box"></i> Todos los productos</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link text-white" href="#"><i class="fas fa-th-large"></i> Colecciones</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link text-white" href="#"><i class="fas fa-tags"></i> Promociones</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link text-white" href="#"><i class="fas fa-shopping-cart"></i> Carrito de compras</a>
-      </li>
-      <li class="nav-item">
-        <form asp-controller="Account" asp-action="Login" method="get" class="mb-0">
-          <button class="btn btn-outline-light btn-sm" type="submit"><i class="fas fa-user"></i> Iniciar Sesión</button>
-        </form>
-      </li>
-    </ul>
-  </div>
-</nav>
-
+@using DarkCloud.Models
+@{
+    var db = Context.RequestServices.GetService(typeof(ApplicationDbContext)) as ApplicationDbContext;
+    var heroConfig = db?.HomeHeroConfigs.FirstOrDefault();
+    var frases = heroConfig?.FrasesJson != null ? System.Text.Json.JsonSerializer.Deserialize<List<string>>(heroConfig.FrasesJson) ?? new List<string>() : new List<string>();
+    var imagenes = heroConfig?.ImagenesCarruselJson != null ? System.Text.Json.JsonSerializer.Deserialize<List<string>>(heroConfig.ImagenesCarruselJson) ?? new List<string>() : new List<string>();
+    var duracion = heroConfig?.DuracionCarruselMs > 0 ? heroConfig.DuracionCarruselMs : 5000;
+}
+@if (heroConfig != null && ((frases != null && frases.Count > 0) || (imagenes != null && imagenes.Count > 0))) {
 <header class="hero-section text-white py-5">
   <div class="container d-flex align-items-center justify-content-between flex-wrap flex-md-nowrap" style="min-height: 50vh;">
     <div class="hero-text text-start" style="flex:1; min-width:260px; max-width:500px;">
-      <h1 class="display-4 fw-bold">DARK CLOUD</h1>
-      <div id="hero-carousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+      <h1 class="display-4 fw-bold">@heroConfig.Titulo</h1>
+      <div id="hero-carousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
-          <div class="carousel-item active">
-            <p class="lead">¡Bienvenido a tu mundo gamer! "Explora, juega y domina"</p>
-          </div>
-          <div class="carousel-item">
-            <p class="lead">"Descubre los mejores títulos y ofertas"</p>
-          </div>
-          <div class="carousel-item">
-            <p class="lead">"Tu aventura gamer comienza aquí"</p>
-          </div>
-          <div class="carousel-item">
-            <p class="lead">"Juega, explora y conquista"</p>
-          </div>
+          @if (frases != null) {
+            @for (int i = 0; i < frases.Count; i++) {
+              <div class="carousel-item @(i == 0 ? "active" : "")">
+                <p class="lead">@frases[i]</p>
+              </div>
+            }
+          }
         </div>
       </div>
-      <a href="#catalogo" class="btn btn-primary btn-lg mt-3">Explorar Catálogo</a>
+      <a href="@heroConfig.EnlaceBoton" class="btn btn-primary btn-lg mt-3">@heroConfig.TextoBoton</a>
     </div>
-    <div class="hero-bg-carousel" style="flex:1; min-width:260px; max-width:600px; height:350px; position:relative;"></div>
+    <div class="hero-bg-carousel" style="flex:1; min-width:260px; max-width:600px; height:350px; position:relative;">
+      @if (imagenes != null) {
+        for (int i = 0; i < imagenes.Count; i++) {
+          <div class="bg-image@(i == 0 ? " active" : "")" style="background-image:url('@imagenes[i]');"></div>
+        }
+      }
+    </div>
   </div>
 </header>
-
 <div class="container mt-5">
   <div class="alert alert-info text-center" role="alert">
-    ENVÍO GRATIS EN PRODUCTOS SUPERIORES A S/99 | ENVÍOS A TODO PERÚ
+    @heroConfig.MensajeBanner
   </div>
 </div>
+}
 
-<div id="catalogo" class="container mt-5">
-  <h2 class="text-center mb-4">Categorías Destacadas</h2>
-  <div class="row text-center">
-    <div class="col-md-3">
-      <a href="#" class="btn btn-outline-light w-100 mb-3">Videojuegos y consolas</a>
-    </div>
-    <div class="col-md-3">
-      <a href="#" class="btn btn-outline-light w-100 mb-3">Accesorios de Consola</a>
-    </div>
-    <div class="col-md-3">
-      <a href="#" class="btn btn-outline-light w-100 mb-3">Zona Gamer</a>
-    </div>
-    <div class="col-md-3">
-      <a href="#" class="btn btn-outline-light w-100 mb-3">Liquidación</a>
-    </div>
-  </div>
-
-  <h2 class="text-center mt-5 mb-4">Ofertas Destacadas</h2>
+<!-- NOVEDADES -->
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Novedades</h2>
   <div class="row">
-    @for (int i = 1; i <= 4; i++) {
-      string[] images = { "/images/CyberPunk.jpg", "/images/Bloodborne-ps5.jpg", "/images/DonkeyKong.jpg", "/images/Persona5.jpeg" };
+    @foreach (var producto in Model.OrderByDescending(p => p.Id).Take(4))
+    {
       <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-        <div class="card h-100 shadow-sm">
-          <img src="@images[i - 1]" class="card-img-top" alt="Producto @i">
+        <div class="card h-100 shadow-sm border-primary">
+          <img src="@producto.ImagenUrl" class="card-img-top" alt="@producto.Nombre">
           <div class="card-body d-flex flex-column">
-            <h5 class="card-title">Producto @i</h5>
-            <p class="card-text text-danger">-30% S/ 2,999.00</p>
-            <p class="card-text text-muted"><s>S/ 4,299.00</s></p>
-            <div class="d-flex align-items-center mb-3">
-              <button class="btn btn-outline-secondary btn-sm me-2" onclick="decreaseCount(@i)">-</button>
-              <span id="count-@i" class="mx-2">0</span>
-              <button class="btn btn-outline-secondary btn-sm ms-2" onclick="increaseCount(@i)">+</button>
-            </div>
-            <a href="@Url.Action(SignInManager.IsSignedIn(User) ? "AddToCart" : "Login", "Account")" class="btn btn-primary mt-auto" onclick="return SignInManager.IsSignedIn(User) ? true : alert('Primero debes iniciar sesión');">
+            <h5 class="card-title">@producto.Nombre</h5>
+            <p class="card-text">@producto.Descripcion</p>
+            <p class="card-text fw-bold text-primary">S/ @producto.Precio</p>
+            <span class="badge bg-success mb-2">Nuevo</span>
+            <a href="@Url.Action(SignInManager.IsSignedIn(User) ? "AddToCart" : "Login", "Account")" class="btn btn-outline-primary mt-auto" onclick="return SignInManager.IsSignedIn(User) ? true : alert('Primero debes iniciar sesión');">
                 Añadir al carrito
             </a>
           </div>
@@ -115,26 +70,173 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- OFERTAS DESTACADAS -->
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Ofertas Destacadas</h2>
+  <div class="row">
+    @foreach (var producto in Model.Where(p => p.EsOferta))
+    {
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+        <div class="card h-100 shadow-sm border-danger">
+          <img src="@producto.ImagenUrl" class="card-img-top" alt="@producto.Nombre">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">@producto.Nombre</h5>
+            <p class="card-text">@producto.Descripcion</p>
+            <p class="card-text text-danger">
+              @if (producto.Descuento.HasValue && producto.PrecioReal.HasValue)
+              {
+                <span>-@producto.Descuento.Value.ToString("0")% S/ @producto.Precio</span>
+              }
+              else
+              {
+                <span>S/ @producto.Precio</span>
+              }
+            </p>
+            @if (producto.PrecioReal.HasValue && producto.PrecioReal > producto.Precio)
+            {
+              <p class="card-text text-muted"><s>S/ @producto.PrecioReal</s></p>
+            }
+            <span class="badge bg-danger mb-2">Oferta</span>
+            <a href="@Url.Action(SignInManager.IsSignedIn(User) ? "AddToCart" : "Login", "Account")" class="btn btn-outline-danger mt-auto" onclick="return SignInManager.IsSignedIn(User) ? true : alert('Primero debes iniciar sesión');">
+                Añadir al carrito
+            </a>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- FILTROS GAMER AVANZADOS -->
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Filtrar productos</h2>
+  <div class="row justify-content-center mb-4 g-2">
+    <!-- Géneros -->
+    <div class="col-auto">
+      <div class="btn-group" role="group">
+        <a href="@Url.Action("Catalogo", new { genero = "Acción", plataforma = ViewData["FiltroPlataforma"], tipo = ViewData["FiltroTipo"], modo = ViewData["FiltroModo"], clasificacion = ViewData["FiltroClasificacion"], categoria = ViewData["FiltroCategoria"] })" class="btn btn-outline-light @(ViewData["FiltroGenero"] as string == "Acción" ? "active fw-bold" : "")"><i class="fas fa-fist-raised me-1"></i>Acción</a>
+        <a href="@Url.Action("Catalogo", new { genero = "Aventura", plataforma = ViewData["FiltroPlataforma"], tipo = ViewData["FiltroTipo"], modo = ViewData["FiltroModo"], clasificacion = ViewData["FiltroClasificacion"], categoria = ViewData["FiltroCategoria"] })" class="btn btn-outline-light @(ViewData["FiltroGenero"] as string == "Aventura" ? "active fw-bold" : "")"><i class="fas fa-hat-wizard me-1"></i>Aventura</a>
+        <a href="@Url.Action("Catalogo", new { genero = "Deportes", plataforma = ViewData["FiltroPlataforma"], tipo = ViewData["FiltroTipo"], modo = ViewData["FiltroModo"], clasificacion = ViewData["FiltroClasificacion"], categoria = ViewData["FiltroCategoria"] })" class="btn btn-outline-light @(ViewData["FiltroGenero"] as string == "Deportes" ? "active fw-bold" : "")"><i class="fas fa-futbol me-1"></i>Deportes</a>
+        <a href="@Url.Action("Catalogo", new { genero = "RPG", plataforma = ViewData["FiltroPlataforma"], tipo = ViewData["FiltroTipo"], modo = ViewData["FiltroModo"], clasificacion = ViewData["FiltroClasificacion"], categoria = ViewData["FiltroCategoria"] })" class="btn btn-outline-light @(ViewData["FiltroGenero"] as string == "RPG" ? "active fw-bold" : "")"><i class="fas fa-dice-d20 me-1"></i>RPG</a>
+        <a href="@Url.Action("Catalogo", new { genero = "Estrategia", plataforma = ViewData["FiltroPlataforma"], tipo = ViewData["FiltroTipo"], modo = ViewData["FiltroModo"], clasificacion = ViewData["FiltroClasificacion"], categoria = ViewData["FiltroCategoria"] })" class="btn btn-outline-light @(ViewData["FiltroGenero"] as string == "Estrategia" ? "active fw-bold" : "")"><i class="fas fa-chess me-1"></i>Estrategia</a>
+        <a href="@Url.Action("Catalogo", new { genero = "Simulación", plataforma = ViewData["FiltroPlataforma"], tipo = ViewData["FiltroTipo"], modo = ViewData["FiltroModo"], clasificacion = ViewData["FiltroClasificacion"], categoria = ViewData["FiltroCategoria"] })" class="btn btn-outline-light @(ViewData["FiltroGenero"] as string == "Simulación" ? "active fw-bold" : "")"><i class="fas fa-cogs me-1"></i>Simulación</a>
+      </div>
+    </div>
+    <!-- Plataformas -->
+    <div class="col-auto">
+      <div class="btn-group" role="group">
+        <a href="@Url.Action("Catalogo", new { plataforma = "PlayStation", genero = ViewData["FiltroGenero"], tipo = ViewData["FiltroTipo"], modo = ViewData["FiltroModo"], clasificacion = ViewData["FiltroClasificacion"], categoria = ViewData["FiltroCategoria"] })" class="btn btn-outline-light @(ViewData["FiltroPlataforma"] as string == "PlayStation" ? "active fw-bold" : "")"><i class="fab fa-playstation me-1"></i>PlayStation</a>
+        <a href="@Url.Action("Catalogo", new { plataforma = "Xbox", genero = ViewData["FiltroGenero"], tipo = ViewData["FiltroTipo"], modo = ViewData["FiltroModo"], clasificacion = ViewData["FiltroClasificacion"], categoria = ViewData["FiltroCategoria"] })" class="btn btn-outline-light @(ViewData["FiltroPlataforma"] as string == "Xbox" ? "active fw-bold" : "")"><i class="fab fa-xbox me-1"></i>Xbox</a>
+        <a href="@Url.Action("Catalogo", new { plataforma = "Nintendo", genero = ViewData["FiltroGenero"], tipo = ViewData["FiltroTipo"], modo = ViewData["FiltroModo"], clasificacion = ViewData["FiltroClasificacion"], categoria = ViewData["FiltroCategoria"] })" class="btn btn-outline-light @(ViewData["FiltroPlataforma"] as string == "Nintendo" ? "active fw-bold" : "")"><i class="fas fa-gamepad me-1"></i>Nintendo</a>
+        <a href="@Url.Action("Catalogo", new { plataforma = "PC", genero = ViewData["FiltroGenero"], tipo = ViewData["FiltroTipo"], modo = ViewData["FiltroModo"], clasificacion = ViewData["FiltroClasificacion"], categoria = ViewData["FiltroCategoria"] })" class="btn btn-outline-light @(ViewData["FiltroPlataforma"] as string == "PC" ? "active fw-bold" : "")"><i class="fas fa-desktop me-1"></i>PC</a>
+      </div>
+    </div>
+    <!-- Tipo de producto -->
+    <div class="col-auto">
+      <div class="btn-group" role="group">
+        <a href="@Url.Action("Catalogo", new { tipo = "Videojuego", genero = ViewData["FiltroGenero"], plataforma = ViewData["FiltroPlataforma"], modo = ViewData["FiltroModo"], clasificacion = ViewData["FiltroClasificacion"], categoria = ViewData["FiltroCategoria"] })" class="btn btn-outline-light @(ViewData["FiltroTipo"] as string == "Videojuego" ? "active fw-bold" : "")"><i class="fas fa-gamepad me-1"></i>Videojuegos</a>
+        <a href="@Url.Action("Catalogo", new { tipo = "Consola", genero = ViewData["FiltroGenero"], plataforma = ViewData["FiltroPlataforma"], modo = ViewData["FiltroModo"], clasificacion = ViewData["FiltroClasificacion"], categoria = ViewData["FiltroCategoria"] })" class="btn btn-outline-light @(ViewData["FiltroTipo"] as string == "Consola" ? "active fw-bold" : "")"><i class="fas fa-tv me-1"></i>Consolas</a>
+        <a href="@Url.Action("Catalogo", new { tipo = "Accesorio", genero = ViewData["FiltroGenero"], plataforma = ViewData["FiltroPlataforma"], modo = ViewData["FiltroModo"], clasificacion = ViewData["FiltroClasificacion"], categoria = ViewData["FiltroCategoria"] })" class="btn btn-outline-light @(ViewData["FiltroTipo"] as string == "Accesorio" ? "active fw-bold" : "")"><i class="fas fa-headphones me-1"></i>Accesorios</a>
+        <a href="@Url.Action("Catalogo", new { tipo = "Coleccionable", genero = ViewData["FiltroGenero"], plataforma = ViewData["FiltroPlataforma"], modo = ViewData["FiltroModo"], clasificacion = ViewData["FiltroClasificacion"], categoria = ViewData["FiltroCategoria"] })" class="btn btn-outline-light @(ViewData["FiltroTipo"] as string == "Coleccionable" ? "active fw-bold" : "")"><i class="fas fa-star me-1"></i>Coleccionables</a>
+      </div>
+    </div>
+    <!-- Modo de juego -->
+    <div class="col-auto">
+      <div class="btn-group" role="group">
+        <a href="@Url.Action("Catalogo", new { modo = "Un jugador", genero = ViewData["FiltroGenero"], plataforma = ViewData["FiltroPlataforma"], tipo = ViewData["FiltroTipo"], clasificacion = ViewData["FiltroClasificacion"], categoria = ViewData["FiltroCategoria"] })" class="btn btn-outline-light @(ViewData["FiltroModo"] as string == "Un jugador" ? "active fw-bold" : "")"><i class="fas fa-user me-1"></i>Un jugador</a>
+        <a href="@Url.Action("Catalogo", new { modo = "Multijugador", genero = ViewData["FiltroGenero"], plataforma = ViewData["FiltroPlataforma"], tipo = ViewData["FiltroTipo"], clasificacion = ViewData["FiltroClasificacion"], categoria = ViewData["FiltroCategoria"] })" class="btn btn-outline-light @(ViewData["FiltroModo"] as string == "Multijugador" ? "active fw-bold" : "")"><i class="fas fa-users me-1"></i>Multijugador</a>
+        <a href="@Url.Action("Catalogo", new { modo = "Cooperativo", genero = ViewData["FiltroGenero"], plataforma = ViewData["FiltroPlataforma"], tipo = ViewData["FiltroTipo"], clasificacion = ViewData["FiltroClasificacion"], categoria = ViewData["FiltroCategoria"] })" class="btn btn-outline-light @(ViewData["FiltroModo"] as string == "Cooperativo" ? "active fw-bold" : "")"><i class="fas fa-handshake me-1"></i>Cooperativo</a>
+      </div>
+    </div>
+    <!-- Clasificación de edad -->
+    <div class="col-auto">
+      <div class="btn-group" role="group">
+        <a href="@Url.Action("Catalogo", new { clasificacion = "E", genero = ViewData["FiltroGenero"], plataforma = ViewData["FiltroPlataforma"], tipo = ViewData["FiltroTipo"], modo = ViewData["FiltroModo"], categoria = ViewData["FiltroCategoria"] })" class="btn btn-outline-light @(ViewData["FiltroClasificacion"] as string == "E" ? "active fw-bold" : "")">E</a>
+        <a href="@Url.Action("Catalogo", new { clasificacion = "T", genero = ViewData["FiltroGenero"], plataforma = ViewData["FiltroPlataforma"], tipo = ViewData["FiltroTipo"], modo = ViewData["FiltroModo"], categoria = ViewData["FiltroCategoria"] })" class="btn btn-outline-light @(ViewData["FiltroClasificacion"] as string == "T" ? "active fw-bold" : "")">T</a>
+        <a href="@Url.Action("Catalogo", new { clasificacion = "M", genero = ViewData["FiltroGenero"], plataforma = ViewData["FiltroPlataforma"], tipo = ViewData["FiltroTipo"], modo = ViewData["FiltroModo"], categoria = ViewData["FiltroCategoria"] })" class="btn btn-outline-light @(ViewData["FiltroClasificacion"] as string == "M" ? "active fw-bold" : "")">M</a>
+        <a href="@Url.Action("Catalogo", new { clasificacion = "A", genero = ViewData["FiltroGenero"], plataforma = ViewData["FiltroPlataforma"], tipo = ViewData["FiltroTipo"], modo = ViewData["FiltroModo"], categoria = ViewData["FiltroCategoria"] })" class="btn btn-outline-light @(ViewData["FiltroClasificacion"] as string == "A" ? "active fw-bold" : "")">A</a>
+      </div>
+    </div>
+    <!-- Categorías especiales -->
+    <div class="col-auto">
+      <div class="btn-group" role="group">
+        <a href="@Url.Action("Catalogo", new { categoria = "Edición especial", genero = ViewData["FiltroGenero"], plataforma = ViewData["FiltroPlataforma"], tipo = ViewData["FiltroTipo"], modo = ViewData["FiltroModo"], clasificacion = ViewData["FiltroClasificacion"] })" class="btn btn-outline-light @(ViewData["FiltroCategoria"] as string == "Edición especial" ? "active fw-bold" : "")"><i class="fas fa-crown me-1"></i>Edición especial</a>
+        <a href="@Url.Action("Catalogo", new { categoria = "Colección", genero = ViewData["FiltroGenero"], plataforma = ViewData["FiltroPlataforma"], tipo = ViewData["FiltroTipo"], modo = ViewData["FiltroModo"], clasificacion = ViewData["FiltroClasificacion"] })" class="btn btn-outline-light @(ViewData["FiltroCategoria"] as string == "Colección" ? "active fw-bold" : "")"><i class="fas fa-layer-group me-1"></i>Colección</a>
+        <a href="@Url.Action("Catalogo", new { categoria = "Liquidación", genero = ViewData["FiltroGenero"], plataforma = ViewData["FiltroPlataforma"], tipo = ViewData["FiltroTipo"], modo = ViewData["FiltroModo"], clasificacion = ViewData["FiltroClasificacion"] })" class="btn btn-outline-light @(ViewData["FiltroCategoria"] as string == "Liquidación" ? "active fw-bold" : "")"><i class="fas fa-fire me-1"></i>Liquidación</a>
+      </div>
+    </div>
+    <!-- Quitar filtros -->
+    <div class="col-auto">
+      <a href="@Url.Action("Catalogo")" class="btn btn-secondary ms-2"><i class="fas fa-times me-1"></i>Quitar Filtros</a>
+    </div>
+  </div>
+</div>
+
+<!-- CATÁLOGO GENERAL -->
+<div id="catalogo" class="container mt-5">
+  <h2 class="text-center mb-4">Catálogo General</h2>
+  <div class="row">
+    @if (!Model.Any())
+    {
+      <div class="col-12">
+        <div class="alert alert-warning text-center mt-4" role="alert">
+          <i class="fas fa-exclamation-circle me-2"></i>No se encontraron productos que coincidan con tu búsqueda o filtros.
+        </div>
+      </div>
+    }
+    else
+    {
+      @foreach (var producto in Model)
+      {
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div class="card h-100 shadow-sm">
+            <img src="@producto.ImagenUrl" class="card-img-top" alt="@producto.Nombre">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">@producto.Nombre</h5>
+              <p class="card-text">@producto.Descripcion</p>
+              <p class="card-text fw-bold">S/ @producto.Precio</p>
+              <a href="@Url.Action(SignInManager.IsSignedIn(User) ? "AddToCart" : "Login", "Account")" class="btn btn-primary mt-auto" onclick="return SignInManager.IsSignedIn(User) ? true : alert('Primero debes iniciar sesión');">
+                  Añadir al carrito
+              </a>
+            </div>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>
+
 <script>
   // Inicia el carrusel automáticamente
   const carousel = new bootstrap.Carousel(document.querySelector('#hero-carousel'), {
     interval: 5000,
     wrap: true
   });
-
-  function increaseCount(id) {
-    const countElement = document.getElementById(`count-${id}`);
-    let count = parseInt(countElement.textContent);
-    countElement.textContent = count + 1;
-  }
-
-  function decreaseCount(id) {
-    const countElement = document.getElementById(`count-${id}`);
-    let count = parseInt(countElement.textContent);
-    if (count > 0) {
-      countElement.textContent = count - 1;
+</script>
+<script>
+// Carrusel de imágenes de fondo sincronizado con frases y duración global
+(function() {
+  const frases = document.querySelectorAll('#hero-carousel .carousel-item');
+  const bgCarousel = document.querySelector('.hero-bg-carousel');
+  const bgImages = bgCarousel ? bgCarousel.querySelectorAll('.bg-image') : [];
+  let current = 0;
+  let intervalId = null;
+  const duracion = @duracion;
+  function showSlide(idx) {
+    frases.forEach((el, i) => el.classList.toggle('active', i === idx));
+    if (bgImages.length > 0) {
+      bgImages.forEach((el, i) => el.classList.toggle('active', i === idx));
     }
   }
+  function nextSlide() {
+    current = (current + 1) % frases.length;
+    showSlide(current);
+    clearInterval(intervalId);
+    intervalId = setInterval(nextSlide, duracion);
+  }
+  if (frases.length > 0) {
+    showSlide(current);
+    intervalId = setInterval(nextSlide, duracion);
+  }
+})();
 </script>
-</body>
