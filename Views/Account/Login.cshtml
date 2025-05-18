@@ -105,16 +105,16 @@
     </nav>
     <div class="login-container">
         <h2>Iniciar Sesión</h2>
-        <form>
+        <form method="post" action="/Account/Login">
             <div class="input-group mb-3">
-                <span class="input-group-text"><i class="fas fa-user"></i></span>
-                <input type="text" class="form-control" placeholder="Usuario" required>
+                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                <input type="email" class="form-control" name="email" placeholder="Correo Electrónico" required>
             </div>
             <div class="input-group mb-3">
                 <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                <input type="password" class="form-control" placeholder="Contraseña" required>
+                <input type="password" class="form-control" name="password" placeholder="Contraseña" required>
             </div>
-            <button type="submit">Entrar</button>
+            <button type="submit" class="btn btn-primary w-100">Entrar</button>
         </form>
         <p class="text-center mt-3">¿No tienes una cuenta? <a href="/Account/Register" style="color: #007bff;">Regístrate aquí</a></p>
     </div>

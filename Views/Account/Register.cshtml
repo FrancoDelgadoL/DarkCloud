@@ -105,24 +105,24 @@
     </nav>
     <div class="register-container">
         <h2>Registrar Cuenta</h2>
-        <form>
+        <form method="post" action="/Account/Register">
             <div class="input-group mb-3">
                 <span class="input-group-text"><i class="fas fa-user"></i></span>
-                <input type="text" class="form-control" placeholder="Nombre" required>
+                <input type="text" class="form-control" name="nombre" placeholder="Nombre" required>
             </div>
             <div class="input-group mb-3">
                 <span class="input-group-text"><i class="fas fa-user"></i></span>
-                <input type="text" class="form-control" placeholder="Apellido" required>
+                <input type="text" class="form-control" name="apellido" placeholder="Apellido" required>
             </div>
             <div class="input-group mb-3">
-                <span class="input-group-text"><i class="fas fa-user-circle"></i></span>
-                <input type="text" class="form-control" placeholder="Usuario" required>
+                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                <input type="email" class="form-control" name="email" placeholder="Correo Electrónico" required>
             </div>
             <div class="input-group mb-3">
                 <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                <input type="password" class="form-control" placeholder="Contraseña" required>
+                <input type="password" class="form-control" name="password" placeholder="Contraseña" required>
             </div>
-            <button type="submit">Crear Cuenta</button>
+            <button type="submit" class="btn btn-primary w-100">Crear Cuenta</button>
         </form>
     </div>
     <footer>
