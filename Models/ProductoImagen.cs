@@ -14,6 +14,6 @@ namespace DarkCloud.Models
         public string Url { get; set; } = string.Empty;
         public int Orden { get; set; } = 0;
         [ForeignKey("ProductoId")]
-        public Producto Producto { get; set; }
+        public Producto? Producto { get; set; }
     }
 }
