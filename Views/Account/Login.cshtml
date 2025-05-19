@@ -6,12 +6,16 @@
     <div class="card shadow-lg p-4" style="background:#181a1b; min-width:340px; max-width:400px; width:100%; border-radius:18px; border:1px solid #333;">
         <h2 class="text-center mb-4" style="color:#ffd600; font-weight:700; letter-spacing:1px;">Iniciar Sesión</h2>
         @if (TempData["Error"] != null) {
-            <div class="alert alert-danger">@TempData["Error"]</div>
+            <div class="alert alert-danger d-flex align-items-center" role="alert" style="font-size:1.05rem;">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span>@TempData["Error"]</span>
+            </div>
         }
         @if (TempData["Mensaje"] != null) {
             <div class="alert alert-success">@TempData["Mensaje"]</div>
         }
         <form method="post" action="/Account/Login" autocomplete="on">
+            <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
             <div class="mb-3">
                 <div class="input-group">
                     <span class="input-group-text bg-dark text-secondary border-0"><i class="fas fa-envelope"></i></span>

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace DarkCloud.Controllers
 {
@@ -36,7 +37,7 @@ namespace DarkCloud.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AgregarProducto(Producto producto, IFormFile ImagenArchivo)
+        public IActionResult AgregarProducto(Producto producto, IFormFile ImagenArchivo, List<IFormFile> GaleriaArchivos)
         {
             // Procesar categorías especiales (multiselección)
             if (Request.Form["CategoriasEspeciales"].Count > 0)
@@ -59,6 +60,33 @@ namespace DarkCloud.Controllers
             {
                 _context.Productos.Add(producto);
                 _context.SaveChanges();
+                // Guardar imágenes de galería
+                if (GaleriaArchivos != null && GaleriaArchivos.Count > 0)
+                {
+                    int orden = 0;
+                    foreach (var archivo in GaleriaArchivos)
+                    {
+                        if (archivo != null && archivo.Length > 0)
+                        {
+                            var nombreArchivo = Path.GetFileNameWithoutExtension(archivo.FileName);
+                            var extension = Path.GetExtension(archivo.FileName);
+                            var nombreUnico = $"galeria_{Guid.NewGuid()}{extension}";
+                            var rutaGuardado = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", nombreUnico);
+                            using (var stream = new FileStream(rutaGuardado, FileMode.Create))
+                            {
+                                archivo.CopyTo(stream);
+                            }
+                            var img = new ProductoImagen
+                            {
+                                ProductoId = producto.Id,
+                                Url = $"/images/{nombreUnico}",
+                                Orden = orden++
+                            };
+                            _context.ProductoImagenes.Add(img);
+                        }
+                    }
+                    _context.SaveChanges();
+                }
                 return RedirectToAction("Productos");
             }
             return View(producto);
@@ -66,14 +94,16 @@ namespace DarkCloud.Controllers
 
         public IActionResult EditarProducto(int id)
         {
-            var producto = _context.Productos.FirstOrDefault(p => p.Id == id);
+            var producto = _context.Productos
+                .Include(p => p.Imagenes)
+                .FirstOrDefault(p => p.Id == id);
             if (producto == null) return NotFound();
             return View(producto);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult EditarProducto(Producto producto, IFormFile ImagenArchivo)
+        public IActionResult EditarProducto(Producto producto, IFormFile ImagenArchivo, List<IFormFile> GaleriaArchivos, int[] EliminarGaleriaIds)
         {
             var productoDb = _context.Productos.FirstOrDefault(p => p.Id == producto.Id);
             if (productoDb == null) return NotFound();
@@ -103,6 +133,40 @@ namespace DarkCloud.Controllers
                     ImagenArchivo.CopyTo(stream);
                 }
                 productoDb.ImagenUrl = $"/images/{nombreUnico}";
+            }
+
+            // Eliminar imágenes de galería marcadas
+            if (EliminarGaleriaIds != null && EliminarGaleriaIds.Length > 0)
+            {
+                var imagenesEliminar = _context.ProductoImagenes.Where(i => EliminarGaleriaIds.Contains(i.Id) && i.ProductoId == productoDb.Id).ToList();
+                _context.ProductoImagenes.RemoveRange(imagenesEliminar);
+            }
+
+            // Agregar nuevas imágenes de galería
+            if (GaleriaArchivos != null && GaleriaArchivos.Count > 0)
+            {
+                int orden = productoDb.Imagenes?.Count() ?? 0;
+                foreach (var archivo in GaleriaArchivos)
+                {
+                    if (archivo != null && archivo.Length > 0)
+                    {
+                        var nombreArchivo = Path.GetFileNameWithoutExtension(archivo.FileName);
+                        var extension = Path.GetExtension(archivo.FileName);
+                        var nombreUnico = $"galeria_{Guid.NewGuid()}{extension}";
+                        var rutaGuardado = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", nombreUnico);
+                        using (var stream = new FileStream(rutaGuardado, FileMode.Create))
+                        {
+                            archivo.CopyTo(stream);
+                        }
+                        var img = new ProductoImagen
+                        {
+                            ProductoId = productoDb.Id,
+                            Url = $"/images/{nombreUnico}",
+                            Orden = orden++
+                        };
+                        _context.ProductoImagenes.Add(img);
+                    }
+                }
             }
 
             _context.SaveChanges();

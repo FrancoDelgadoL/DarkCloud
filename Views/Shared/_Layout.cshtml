@@ -131,8 +131,9 @@
                 </ul>
               </li>
               <li class="nav-item">
-                <a class="nav-link text-white" href="#">
+                <a class="nav-link text-white position-relative" href="/Home/Carrito">
                   <i class="fas fa-shopping-cart me-1"></i> Carrito
+                  <span id="cart-count-badge" class="badge bg-danger ms-1" style="display:none;position:absolute;top:2px;right:-10px;">0</span>
                 </a>
               </li>
               <li class="nav-item dropdown">
@@ -222,6 +223,20 @@
       }
       document.addEventListener('DOMContentLoaded', initDropdowns);
       document.addEventListener('htmx:afterSwap', initDropdowns); // por si usas htmx/ajax
+
+      // Mostrar el badge del carrito con la suma real de cantidades desde localStorage
+      (function() {
+        try {
+          let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+          let count = carrito.reduce((acc, p) => acc + (p.cantidad || 1), 0);
+          const badge = document.getElementById('cart-count-badge');
+          if (badge) {
+            badge.textContent = count;
+            badge.style.display = count > 0 ? '' : 'none';
+          }
+          sessionStorage.setItem('cartCount', count);
+        } catch {}
+      })();
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

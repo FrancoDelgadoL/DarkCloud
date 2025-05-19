@@ -1,0 +1,97 @@
+@model List<DarkCloud.Models.Producto>
+@{
+    ViewData["Title"] = "Carrito de Compras";
+}
+<div class="container my-5">
+    <h2 class="text-center mb-4">Carrito de Compras</h2>
+    <div id="carrito-lista" class="row justify-content-center">
+        <!-- Aquí se renderizan los productos del carrito -->
+    </div>
+    <div class="text-center mt-4">
+        <a href="/Home/Catalogo" class="btn btn-secondary">Seguir comprando</a>
+    </div>
+</div>
+
+<!-- Modal de confirmación para eliminar -->
+<div class="modal fade" id="modalConfirmarEliminar" tabindex="-1" aria-labelledby="modalConfirmarEliminarLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="modalConfirmarEliminarLabel">Quitar producto del carrito</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body text-center">
+        ¿Realmente deseas quitar este producto del carrito?
+      </div>
+      <div class="modal-footer border-0 justify-content-center">
+        <button type="button" class="btn btn-danger" id="btn-confirmar-quitar">Sí, quitar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, mantener</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+<script>
+let productoAEliminar = null;
+
+function renderCarrito(productos) {
+    const cont = document.getElementById('carrito-lista');
+    cont.innerHTML = '';
+    if (!productos.length) {
+        cont.innerHTML = '<div class="col-12 text-center text-muted py-5">No hay productos en el carrito.</div>';
+        return;
+    }
+    productos.forEach(prod => {
+        const card = document.createElement('div');
+        card.className = 'col-md-6 col-lg-4 mb-4';
+        card.innerHTML = `
+        <div class='card h-100 shadow-sm bg-dark text-white'>
+            <img src='${prod.imagenUrl}' class='card-img-top' style='max-height:160px; object-fit:contain; background:#23272b;'>
+            <div class='card-body d-flex flex-column'>
+                <h5 class='card-title'>${prod.nombre}</h5>
+                <p class='card-text mb-2'>${prod.descripcion || ''}</p>
+                <p class='fw-bold fs-5 mb-2'>S/ ${prod.precio}</p>
+                <div class='mt-auto d-flex gap-2 justify-content-between'>
+                    <button class='btn btn-danger btn-quitar' data-id='${prod.id}'>Quitar</button>
+                    <a href='/Home/Pagar?productoId=${prod.id}' class='btn btn-success'>Pagar</a>
+                </div>
+            </div>
+        </div>`;
+        cont.appendChild(card);
+    });
+    document.querySelectorAll('.btn-quitar').forEach(btn => {
+        btn.onclick = function() {
+            productoAEliminar = btn.getAttribute('data-id');
+            var modal = new bootstrap.Modal(document.getElementById('modalConfirmarEliminar'));
+            modal.show();
+        };
+    });
+}
+
+// Simulación: cargar productos del carrito desde sessionStorage/localStorage o variable global
+function getCarrito() {
+    // Aquí deberías hacer un fetch al backend o usar session/localStorage
+    // Simulación básica:
+    let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    return carrito;
+}
+function setCarrito(carrito) {
+    localStorage.setItem('carrito', JSON.stringify(carrito));
+}
+
+// Confirmar quitar producto
+const btnConfirmarQuitar = document.getElementById('btn-confirmar-quitar');
+btnConfirmarQuitar.onclick = function() {
+    let carrito = getCarrito();
+    carrito = carrito.filter(p => p.id != productoAEliminar);
+    setCarrito(carrito);
+    renderCarrito(carrito);
+    var modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmarEliminar'));
+    modal.hide();
+};
+
+// Inicializar
+renderCarrito(getCarrito());
+</script>
+}

@@ -9,5 +9,6 @@ namespace DarkCloud.Models
         public DbSet<Producto> Productos { get; set; }
         public DbSet<HomeHeroConfig> HomeHeroConfigs { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<ProductoImagen> ProductoImagenes { get; set; }
     }
 }

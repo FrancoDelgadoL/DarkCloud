@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace DarkCloud.Models
 {
     public class Producto
@@ -17,5 +19,7 @@ namespace DarkCloud.Models
         public string? ModoJuego { get; set; }
         public string? ClasificacionEdad { get; set; }
         public string? CategoriasEspeciales { get; set; } // Puede ser múltiple, separado por comas
+
+        public virtual ICollection<ProductoImagen> Imagenes { get; set; } = new List<ProductoImagen>();
     }
 }

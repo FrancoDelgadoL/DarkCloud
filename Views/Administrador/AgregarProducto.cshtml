@@ -15,110 +15,189 @@
         </ul>
     </nav>
     <main class="flex-fill p-4">
-        <h2>Agregar Producto</h2>
-        <form asp-action="AgregarProducto" method="post" enctype="multipart/form-data">
-            <div class="mb-3">
-                <label asp-for="Nombre" class="form-label">Nombre</label>
-                <input asp-for="Nombre" class="form-control" required />
+        <div class="container d-flex justify-content-center align-items-center" style="min-height:80vh;">
+            <div class="card shadow-lg p-4" style="background:#f8f9fa; min-width:370px; max-width:540px; width:100%; border-radius:22px; border:1px solid #e0e0e0;">
+                <h2 class="text-center mb-4" style="color:#181a1b; font-weight:700; letter-spacing:1px;">Agregar Producto</h2>
+                <form asp-action="AgregarProducto" method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label asp-for="Nombre" class="form-label fw-bold">Nombre</label>
+                        <input asp-for="Nombre" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Descripcion" class="form-label fw-bold">Descripción</label>
+                        <textarea asp-for="Descripcion" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Genero" class="form-label fw-bold">Género</label>
+                            <select asp-for="Genero" class="form-select" required>
+                                <option value="">Selecciona un género</option>
+                                <option>Acción</option>
+                                <option>Aventura</option>
+                                <option>Shooter (FPS/TPS)</option>
+                                <option>Rol (RPG)</option>
+                                <option>Estrategia</option>
+                                <option>Simulación</option>
+                                <option>Deportes</option>
+                                <option>Carreras</option>
+                                <option>Terror / Supervivencia</option>
+                                <option>Puzzle / Lógica</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Plataforma" class="form-label fw-bold">Plataforma</label>
+                            <select asp-for="Plataforma" class="form-select" required>
+                                <option value="">Selecciona una plataforma</option>
+                                <option>PC (Steam, Epic Games, Origin)</option>
+                                <option>PlayStation (PS4, PS5)</option>
+                                <option>Xbox (One, Series S/X)</option>
+                                <option>Nintendo (Switch, 3DS)</option>
+                                <option>Móviles (Android / iOS)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="TipoProducto" class="form-label fw-bold">Tipo de Producto</label>
+                            <select asp-for="TipoProducto" class="form-select" required>
+                                <option value="">Selecciona un tipo</option>
+                                <option>Juegos completos</option>
+                                <option>Expansiones y DLCs</option>
+                                <option>Juegos en acceso anticipado</option>
+                                <option>Juegos gratuitos (Free-to-Play)</option>
+                                <option>Tarjetas de regalo / Recargas</option>
+                                <option>Accesorios (mandos, auriculares, etc.)</option>
+                                <option>Consolas</option>
+                                <option>Merchandising (camisetas, figuras, etc.)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ModoJuego" class="form-label fw-bold">Modo de Juego</label>
+                            <select asp-for="ModoJuego" class="form-select" required>
+                                <option value="">Selecciona un modo</option>
+                                <option>Un jugador (Single Player)</option>
+                                <option>Multijugador online</option>
+                                <option>Cooperativo local</option>
+                                <option>Competitivo (PvP)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ClasificacionEdad" class="form-label fw-bold">Clasificación de Edad</label>
+                            <select asp-for="ClasificacionEdad" class="form-select" required>
+                                <option value="">Selecciona una clasificación</option>
+                                <option>Todos (E / PEGI 3)</option>
+                                <option>Mayores de 10 años</option>
+                                <option>Adolescente (T / PEGI 12)</option>
+                                <option>Adulto (M / PEGI 16-18)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="CategoriasEspeciales" class="form-label fw-bold">Categorías Especiales</label>
+                            <select asp-for="CategoriasEspeciales" class="form-select" multiple>
+                                <option>Novedades</option>
+                                <option>Más vendidos</option>
+                                <option>Juegos indie</option>
+                                <option>En oferta / descuentos</option>
+                                <option>Realidad virtual (VR)</option>
+                            </select>
+                            <small class="form-text text-muted">Mantén presionada Ctrl (Windows) o Cmd (Mac) para seleccionar varias.</small>
+                        </div>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Precio" class="form-label fw-bold">Precio Oferta</label>
+                            <input asp-for="Precio" class="form-control" type="number" step="0.01" required />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="PrecioReal" class="form-label fw-bold">Precio Real</label>
+                            <input asp-for="PrecioReal" class="form-control" type="number" step="0.01" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Descuento" class="form-label fw-bold">Descuento (%)</label>
+                            <input asp-for="Descuento" class="form-control" type="number" step="0.01" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Imagen principal</label>
+                        <input type="file" name="ImagenArchivo" class="form-control" accept="image/*" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Imágenes de la galería</label>
+                        <input type="file" name="GaleriaArchivos" class="form-control" accept="image/*" multiple />
+                        <small class="form-text text-muted">Puedes seleccionar varias imágenes.</small>
+                        <div id="preview-galeria" class="d-flex flex-wrap gap-2 mt-2"></div>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input asp-for="EsOferta" class="form-check-input" type="checkbox" />
+                        <label asp-for="EsOferta" class="form-check-label fw-bold">¿Es oferta?</label>
+                    </div>
+                    <div class="d-flex justify-content-center gap-2 mt-4">
+                        <button type="submit" class="btn btn-success btn-lg px-4 fw-bold shadow">Guardar</button>
+                        <a href="/Administrador/Productos" class="btn btn-secondary btn-lg px-4 fw-bold shadow">Cancelar</a>
+                    </div>
+                </form>
             </div>
-            <div class="mb-3">
-                <label asp-for="Descripcion" class="form-label">Descripción</label>
-                <textarea asp-for="Descripcion" class="form-control" rows="2"></textarea>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Genero" class="form-label">Género</label>
-                <select asp-for="Genero" class="form-select" required>
-                    <option value="">Selecciona un género</option>
-                    <option>Acción</option>
-                    <option>Aventura</option>
-                    <option>Shooter (FPS/TPS)</option>
-                    <option>Rol (RPG)</option>
-                    <option>Estrategia</option>
-                    <option>Simulación</option>
-                    <option>Deportes</option>
-                    <option>Carreras</option>
-                    <option>Terror / Supervivencia</option>
-                    <option>Puzzle / Lógica</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Plataforma" class="form-label">Plataforma</label>
-                <select asp-for="Plataforma" class="form-select" required>
-                    <option value="">Selecciona una plataforma</option>
-                    <option>PC (Steam, Epic Games, Origin)</option>
-                    <option>PlayStation (PS4, PS5)</option>
-                    <option>Xbox (One, Series S/X)</option>
-                    <option>Nintendo (Switch, 3DS)</option>
-                    <option>Móviles (Android / iOS)</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label asp-for="TipoProducto" class="form-label">Tipo de Producto</label>
-                <select asp-for="TipoProducto" class="form-select" required>
-                    <option value="">Selecciona un tipo</option>
-                    <option>Juegos completos</option>
-                    <option>Expansiones y DLCs</option>
-                    <option>Juegos en acceso anticipado</option>
-                    <option>Juegos gratuitos (Free-to-Play)</option>
-                    <option>Tarjetas de regalo / Recargas</option>
-                    <option>Accesorios (mandos, auriculares, etc.)</option>
-                    <option>Consolas</option>
-                    <option>Merchandising (camisetas, figuras, etc.)</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label asp-for="ModoJuego" class="form-label">Modo de Juego</label>
-                <select asp-for="ModoJuego" class="form-select" required>
-                    <option value="">Selecciona un modo</option>
-                    <option>Un jugador (Single Player)</option>
-                    <option>Multijugador online</option>
-                    <option>Cooperativo local</option>
-                    <option>Competitivo (PvP)</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label asp-for="ClasificacionEdad" class="form-label">Clasificación de Edad</label>
-                <select asp-for="ClasificacionEdad" class="form-select" required>
-                    <option value="">Selecciona una clasificación</option>
-                    <option>Todos (E / PEGI 3)</option>
-                    <option>Mayores de 10 años</option>
-                    <option>Adolescente (T / PEGI 12)</option>
-                    <option>Adulto (M / PEGI 16-18)</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label asp-for="CategoriasEspeciales" class="form-label">Categorías Especiales</label>
-                <select asp-for="CategoriasEspeciales" class="form-select" multiple>
-                    <option>Novedades</option>
-                    <option>Más vendidos</option>
-                    <option>Juegos indie</option>
-                    <option>En oferta / descuentos</option>
-                    <option>Realidad virtual (VR)</option>
-                </select>
-                <small class="form-text text-muted">Mantén presionada Ctrl (Windows) o Cmd (Mac) para seleccionar varias.</small>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Precio" class="form-label">Precio Oferta</label>
-                <input asp-for="Precio" class="form-control" type="number" step="0.01" required />
-            </div>
-            <div class="mb-3">
-                <label asp-for="PrecioReal" class="form-label">Precio Real</label>
-                <input asp-for="PrecioReal" class="form-control" type="number" step="0.01" />
-            </div>
-            <div class="mb-3">
-                <label asp-for="Descuento" class="form-label">Descuento (%)</label>
-                <input asp-for="Descuento" class="form-control" type="number" step="0.01" />
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Seleccionar imagen</label>
-                <input type="file" name="ImagenArchivo" class="form-control" accept="image/*" />
-            </div>
-            <div class="form-check mb-3">
-                <input asp-for="EsOferta" class="form-check-input" type="checkbox" />
-                <label asp-for="EsOferta" class="form-check-label">¿Es oferta?</label>
-            </div>
-            <button type="submit" class="btn btn-success">Guardar</button>
-            <a href="/Administrador/Productos" class="btn btn-secondary ms-2">Cancelar</a>
-        </form>
+        </div>
     </main>
 </div>
+<script>
+// --- Preview acumulativo de imágenes de galería ---
+(function() {
+    const input = document.querySelector('input[name="GaleriaArchivos"]');
+    const preview = document.getElementById('preview-galeria');
+    let filesArray = [];
+
+    // Si el usuario selecciona nuevas imágenes, las agregamos al array
+    input.addEventListener('change', function(e) {
+        // Convertir FileList a array y agregar
+        for (const file of e.target.files) {
+            filesArray.push(file);
+        }
+        renderPreview();
+        // Limpiar el input para permitir volver a seleccionar las mismas imágenes si se desea
+        input.value = '';
+    });
+
+    // Renderiza el preview y permite eliminar imágenes antes de enviar
+    function renderPreview() {
+        preview.innerHTML = '';
+        filesArray.forEach((file, idx) => {
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                const div = document.createElement('div');
+                div.className = 'position-relative';
+                const img = document.createElement('img');
+                img.src = ev.target.result;
+                img.style.maxWidth = '80px';
+                img.style.maxHeight = '80px';
+                img.className = 'rounded border';
+                // Botón para eliminar
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn btn-sm btn-danger position-absolute top-0 end-0';
+                btn.style.zIndex = 2;
+                btn.innerHTML = '<i class="fas fa-times"></i>';
+                btn.onclick = function() {
+                    filesArray.splice(idx, 1);
+                    renderPreview();
+                };
+                div.appendChild(img);
+                div.appendChild(btn);
+                preview.appendChild(div);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // Al enviar el formulario, crear un DataTransfer con los archivos acumulados
+    input.form.addEventListener('submit', function(e) {
+        if (filesArray.length > 0) {
+            const dt = new DataTransfer();
+            filesArray.forEach(f => dt.items.add(f));
+            input.files = dt.files;
+        }
+    });
+})();
+</script>
