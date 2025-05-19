@@ -2,12 +2,35 @@ using Microsoft.EntityFrameworkCore;
 using DarkCloud.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuración de la base de datos PostgreSQL
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+// --- Fallback automático PostgreSQL -> SQLite ---
+string? pgConn = builder.Configuration.GetConnectionString("DefaultConnection");
+string? sqliteConn = builder.Configuration.GetConnectionString("SQLiteConnection");
+bool usePostgres = true;
+try
+{
+    // Intentar abrir una conexión a PostgreSQL
+    var npgsqlConn = new Npgsql.NpgsqlConnection(pgConn);
+    npgsqlConn.Open();
+    npgsqlConn.Close();
+}
+catch
+{
+    usePostgres = false;
+}
+if (usePostgres)
+{
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseNpgsql(pgConn));
+}
+else
+{
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlite(sqliteConn));
+}
 
 // Configuración de Identity
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
