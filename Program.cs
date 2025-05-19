@@ -9,6 +9,18 @@ var builder = WebApplication.CreateBuilder(args);
 // --- Fallback automático PostgreSQL -> SQLite ---
 string? pgConn = builder.Configuration.GetConnectionString("DefaultConnection");
 string? sqliteConn = builder.Configuration.GetConnectionString("SQLiteConnection");
+
+// --- Soporte para Render: convertir DATABASE_URL a formato Npgsql ---
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+if (!string.IsNullOrEmpty(databaseUrl))
+{
+    var uri = new Uri(databaseUrl);
+    var userInfo = uri.UserInfo.Split(':');
+    var npgsqlConn =
+        $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};Ssl Mode=Require;Trust Server Certificate=true";
+    pgConn = npgsqlConn;
+}
+
 bool usePostgres = true;
 try
 {
