@@ -1,0 +1,126 @@
+@model List<DarkCloud.Models.Producto>
+@{
+    ViewData["Title"] = "Carrito de Compras";
+}
+<div class="container my-5">
+    <h2 class="text-center mb-4" style="color:#ffd600; font-weight:700; letter-spacing:1px;">Carrito de Compras</h2>
+    <div id="carrito-lista" class="row g-4 justify-content-center"></div>
+    <div class="text-center mt-4">
+        <a href="/Home/Catalogo" class="btn btn-secondary">Seguir comprando</a>
+    </div>
+</div>
+<!-- Modal de confirmación para eliminar -->
+<div class="modal fade" id="modalConfirmarEliminar" tabindex="-1" aria-labelledby="modalConfirmarEliminarLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="modalConfirmarEliminarLabel">Quitar producto del carrito</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body text-center">
+        ¿Realmente deseas quitar este producto del carrito?
+      </div>
+      <div class="modal-footer border-0 justify-content-center">
+        <button type="button" class="btn btn-danger" id="btn-confirmar-quitar">Sí, quitar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, mantener</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Estilos específicos del carrito ahora están en site.css -->
+<style>
+/* Tarjeta personalizada para productos del carrito */
+.carrito-card-custom {
+    min-height: 370px;
+    max-width: 340px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 18px;
+    border: 1.5px solid #23272b;
+    background: linear-gradient(135deg, #181a1b 80%, #23272b 100%);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    transition: box-shadow 0.2s, transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.carrito-card-custom:hover {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+    transform: translateY(-4px) scale(1.01);
+}
+.carrito-img-producto {
+    max-height: 140px;
+    max-width: 90%;
+    object-fit: contain;
+    border-radius: 12px;
+    background: #23272b;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    padding: 8px;
+}
+</style>
+<!-- Fin estilos carrito -->
+
+@section Scripts {
+<script>
+let productoAEliminar = null;
+function renderCarrito(productos) {
+    const cont = document.getElementById('carrito-lista');
+    cont.innerHTML = '';
+    let totalCount = 0;
+    if (!productos.length) {
+        cont.innerHTML = '<div class="col-12 text-center text-muted py-5">No hay productos en el carrito.</div>';
+        if(window.updateCartBadge) window.updateCartBadge(0);
+        return;
+    }
+    productos.forEach(prod => {
+        totalCount += prod.cantidad || 1;
+        const card = document.createElement('div');
+        card.className = 'col-12 col-md-6 col-lg-4 d-flex align-items-stretch';
+        card.innerHTML = `
+        <div class='card h-100 shadow-sm bg-dark text-white carrito-card-custom'>
+            <div class='d-flex flex-column align-items-center p-3 pb-0'>
+                <img src='${prod.imagenUrl}' class='carrito-img-producto mb-2' alt='${prod.nombre}'>
+            </div>
+            <div class='card-body d-flex flex-column pt-2'>
+                <h5 class='card-title text-center mb-2'>${prod.nombre}</h5>
+                <p class='card-text text-center text-truncate mb-2' title='${prod.descripcion || ''}'>${prod.descripcion || ''}</p>
+                <div class='d-flex justify-content-between align-items-center mb-2'>
+                    <span class='fw-bold fs-5 text-info'>S/ ${prod.precio}</span>
+                    <span class='badge bg-warning text-dark fs-6'>x${prod.cantidad || 1}</span>
+                </div>
+                <div class='mt-auto d-flex justify-content-center gap-2'>
+                    <button class='btn btn-danger btn-quitar px-3' data-id='${prod.id}'><i class='fas fa-trash-alt me-1'></i>Quitar</button>
+                </div>
+            </div>
+        </div>`;
+        cont.appendChild(card);
+    });
+    if(window.updateCartBadge) window.updateCartBadge(totalCount);
+    document.querySelectorAll('.btn-quitar').forEach(btn => {
+        btn.onclick = function() {
+            productoAEliminar = btn.getAttribute('data-id');
+            var modal = new bootstrap.Modal(document.getElementById('modalConfirmarEliminar'));
+            modal.show();
+        };
+    });
+}
+function getCarrito() {
+    let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    return carrito;
+}
+function setCarrito(carrito) {
+    localStorage.setItem('carrito', JSON.stringify(carrito));
+}
+const btnConfirmarQuitar = document.getElementById('btn-confirmar-quitar');
+btnConfirmarQuitar.onclick = function() {
+    let carrito = getCarrito();
+    carrito = carrito.filter(p => p.id != productoAEliminar);
+    setCarrito(carrito);
+    renderCarrito(carrito);
+    var modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmarEliminar'));
+    modal.hide();
+};
+renderCarrito(getCarrito());
+</script>
+}

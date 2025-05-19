@@ -31,3 +31,27 @@
 //     }, 1000);
 //   }, 4000);
 // })();
+
+window.updateCartBadge = function(count) {
+  sessionStorage.setItem('cartCount', count);
+  var badge = document.getElementById('cart-count-badge');
+  if (badge) {
+    badge.textContent = count;
+    badge.style.display = count > 0 ? '' : 'none';
+  }
+  // Persistir en localStorage para la vista de carrito
+  localStorage.setItem('cartCount', count);
+}
+// Sincronizar badge al cargar la página
+(function() {
+  var badge = document.getElementById('cart-count-badge');
+  // Leer la cantidad real de productos del carrito (sumar cantidades)
+  var carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+  var count = carrito.reduce((acc, p) => acc + (p.cantidad || 1), 0);
+  if (badge) {
+    badge.textContent = count;
+    badge.style.display = count > 0 ? '' : 'none';
+  }
+  // También sincroniza en sessionStorage para compatibilidad
+  sessionStorage.setItem('cartCount', count);
+})();

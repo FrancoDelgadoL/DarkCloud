@@ -140,6 +140,47 @@ public class HomeController : Controller
         return View(productos.ToList());
     }
 
+    public IActionResult Producto(int id)
+    {
+        var producto = _context.Productos.FirstOrDefault(p => p.Id == id);
+        if (producto == null)
+            return NotFound();
+        // Cargar imágenes de galería ordenadas
+        var imagenesGaleria = _context.ProductoImagenes
+            .Where(i => i.ProductoId == id)
+            .OrderBy(i => i.Orden)
+            .Select(i => i.Url)
+            .ToList();
+        ViewBag.ImagenesGaleria = imagenesGaleria;
+        return View(producto);
+    }
+
+    [HttpPost]
+    public IActionResult AddToCart(int id, int cantidad)
+    {
+        var usuarioId = HttpContext.Session.GetString("UsuarioId");
+        if (string.IsNullOrEmpty(usuarioId))
+        {
+            // Guardar la URL de retorno para después del login
+            var returnUrl = Url.Action("Producto", "Home", new { id }) ?? "/";
+            HttpContext.Session.SetString("ReturnToAfterLogin", returnUrl);
+            return Json(new { success = false, loginRequired = true });
+        }
+        var carrito = HttpContext.Session.GetObjectFromJson<Dictionary<int, int>>("Carrito") ?? new Dictionary<int, int>();
+        if (carrito.ContainsKey(id))
+            carrito[id] += cantidad;
+        else
+            carrito[id] = cantidad;
+        HttpContext.Session.SetObjectAsJson("Carrito", carrito);
+        int cartCount = carrito.Values.Sum();
+        return Json(new { success = true, cartCount });
+    }
+
+    public IActionResult Carrito()
+    {
+        return View();
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
