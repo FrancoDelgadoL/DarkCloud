@@ -5,10 +5,9 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
-COPY ["DarkCloud/DarkCloud.csproj", "DarkCloud/"]
-RUN dotnet restore "DarkCloud/DarkCloud.csproj"
+COPY DarkCloud.csproj .
+RUN dotnet restore "./DarkCloud.csproj"
 COPY . .
-WORKDIR "/src/DarkCloud"
 RUN dotnet build "DarkCloud.csproj" -c Release -o /app/build
 
 FROM build AS publish
