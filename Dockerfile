@@ -17,5 +17,7 @@ RUN dotnet publish "DarkCloud.csproj" -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
+# Copiar explícitamente la carpeta de migraciones para EF Core
+COPY --from=build /src/Migrations ./Migrations
 ENV ASPNETCORE_URLS=http://+:80
 ENTRYPOINT ["dotnet", "DarkCloud.dll"]
