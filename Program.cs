@@ -89,6 +89,26 @@ app.MapControllerRoute(
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    // Log para depuración: listar archivos de la carpeta Migrations
+    try
+    {
+        var migrationsPath = Path.Combine(AppContext.BaseDirectory, "Migrations");
+        if (Directory.Exists(migrationsPath))
+        {
+            var files = Directory.GetFiles(migrationsPath);
+            Console.WriteLine($"Archivos en Migrations ({migrationsPath}):");
+            foreach (var file in files)
+                Console.WriteLine(" - " + Path.GetFileName(file));
+        }
+        else
+        {
+            Console.WriteLine($"No se encontró la carpeta Migrations en {migrationsPath}");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error al listar archivos de migración: {ex.Message}");
+    }
     db.Database.Migrate();
 }
 

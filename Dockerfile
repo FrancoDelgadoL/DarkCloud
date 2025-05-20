@@ -1,20 +1,21 @@
-# Dockerfile para ASP.NET Core + EF Core + PostgreSQL/SQLite
+# Dockerfile para ASP.NET Core + EF Core + PostgreSQL/SQLite en Render y local
+# Etapa base: solo runtime
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 WORKDIR /app
 EXPOSE 80
 
+# Etapa build: compila y publica la app
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
-COPY DarkCloud.csproj .
-RUN dotnet restore "./DarkCloud.csproj"
+COPY DarkCloud.csproj ./
+RUN dotnet restore "DarkCloud.csproj"
 COPY . .
 RUN dotnet build "DarkCloud.csproj" -c Release -o /app/build
-
-FROM build AS publish
 RUN dotnet publish "DarkCloud.csproj" -c Release -o /app/publish
 
-FROM base AS final
+# Etapa final: solo archivos necesarios para producción
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish .
 ENV ASPNETCORE_URLS=http://+:80
 ENTRYPOINT ["dotnet", "DarkCloud.dll"]
