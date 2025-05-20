@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DarkCloud.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250518061448_Usuario")]
-    partial class Usuario
+    [Migration("20250520070648_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.4")
+                .HasAnnotation("ProductVersion", "9.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -118,6 +118,32 @@ namespace DarkCloud.Migrations
                     b.ToTable("Productos");
                 });
 
+            modelBuilder.Entity("DarkCloud.Models.ProductoImagen", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Orden")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductoId");
+
+                    b.ToTable("ProductoImagenes");
+                });
+
             modelBuilder.Entity("DarkCloud.Models.Usuario", b =>
                 {
                     b.Property<int>("Id")
@@ -156,6 +182,22 @@ namespace DarkCloud.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Usuarios");
+                });
+
+            modelBuilder.Entity("DarkCloud.Models.ProductoImagen", b =>
+                {
+                    b.HasOne("DarkCloud.Models.Producto", "Producto")
+                        .WithMany("Imagenes")
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Producto");
+                });
+
+            modelBuilder.Entity("DarkCloud.Models.Producto", b =>
+                {
+                    b.Navigation("Imagenes");
                 });
 #pragma warning restore 612, 618
         }
