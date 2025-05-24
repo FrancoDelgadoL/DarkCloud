@@ -21,28 +21,29 @@ if (!string.IsNullOrEmpty(databaseUrl))
     pgConn = npgsqlConn;
 }
 
-bool usePostgres = true;
-try
-{
-    // Intentar abrir una conexión a PostgreSQL
-    var npgsqlConn = new Npgsql.NpgsqlConnection(pgConn);
-    npgsqlConn.Open();
-    npgsqlConn.Close();
-}
-catch
-{
-    usePostgres = false;
-}
-if (usePostgres)
+//bool usePostgres = true;
+bool usePostgres = true; // Forzar PostgreSQL para migraciones
+//try
+//{
+//    // Intentar abrir una conexión a PostgreSQL
+//    var npgsqlConn = new Npgsql.NpgsqlConnection(pgConn);
+//    npgsqlConn.Open();
+//    npgsqlConn.Close();
+//}
+//catch
+//{
+//    usePostgres = false;
+//}
+//if (usePostgres)
 {
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseNpgsql(pgConn));
 }
-else
-{
-    builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseSqlite(sqliteConn));
-}
+//else
+//{
+//    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//        options.UseSqlite(sqliteConn));
+//}
 
 // Configuración de Identity
 builder.Services.AddDefaultIdentity<Usuario>(options =>
