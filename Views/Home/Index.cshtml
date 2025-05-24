@@ -3,7 +3,7 @@
     ViewData["Title"] = "Home Page";
 }
 @using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
+@inject SignInManager<Usuario> SignInManager
 @using DarkCloud.Models
 @{
     var db = Context.RequestServices.GetService(typeof(ApplicationDbContext)) as ApplicationDbContext;
