@@ -45,7 +45,7 @@ else
 }
 
 // Configuración de Identity
-builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+builder.Services.AddDefaultIdentity<Usuario>(options =>
 {
     options.SignIn.RequireConfirmedAccount = true;
 })
@@ -128,13 +128,21 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 
     // Crear usuario administrador si no existe
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Usuario>>();
     var adminEmail = "admin@darkcloud.com";
     var adminPassword = "Admin123!"; // Cambia esto por una contraseña segura
     var adminUser = userManager.FindByEmailAsync(adminEmail).GetAwaiter().GetResult();
     if (adminUser == null)
     {
-        var user = new IdentityUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
+        var user = new Usuario {
+            UserName = adminEmail,
+            Email = adminEmail,
+            EmailConfirmed = true,
+            Nombre = "Admin",
+            Apellido = "Principal",
+            Rol = "Administrador",
+            FechaRegistro = DateTime.UtcNow
+        };
         var result = userManager.CreateAsync(user, adminPassword).GetAwaiter().GetResult();
         if (result.Succeeded)
         {
