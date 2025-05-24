@@ -126,6 +126,27 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine($"Error al obtener migraciones: {ex.Message}");
     }
     db.Database.Migrate();
+
+    // Crear usuario administrador si no existe
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    var adminEmail = "admin@darkcloud.com";
+    var adminPassword = "Admin123!"; // Cambia esto por una contraseña segura
+    var adminUser = userManager.FindByEmailAsync(adminEmail).GetAwaiter().GetResult();
+    if (adminUser == null)
+    {
+        var user = new IdentityUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
+        var result = userManager.CreateAsync(user, adminPassword).GetAwaiter().GetResult();
+        if (result.Succeeded)
+        {
+            // Si tienes roles, asígnale el rol de administrador aquí
+            // userManager.AddToRoleAsync(user, "Administrador").GetAwaiter().GetResult();
+            Console.WriteLine("Usuario administrador creado correctamente.");
+        }
+        else
+        {
+            Console.WriteLine("Error al crear el usuario administrador: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+        }
+    }
 }
 
 app.Run();
