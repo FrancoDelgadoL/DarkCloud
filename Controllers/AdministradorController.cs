@@ -58,12 +58,13 @@ namespace DarkCloud.Controllers
                 var nombreArchivo = Path.GetFileNameWithoutExtension(ImagenArchivo.FileName);
                 var extension = Path.GetExtension(ImagenArchivo.FileName);
                 var nombreUnico = $"{nombreArchivo}_{Guid.NewGuid()}{extension}";
-                var rutaGuardado = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", nombreUnico);
+                var rutaGuardado = Path.Combine(imagesPath, nombreUnico);
                 using (var stream = new FileStream(rutaGuardado, FileMode.Create))
                 {
                     ImagenArchivo.CopyTo(stream);
                 }
-                producto.ImagenUrl = $"/images/{nombreUnico}";
+                // Guardar la URL codificada para el navegador
+                producto.ImagenUrl = $"/images/{nombreUnico.Replace(" ", "%20")}";
             }
             if (ModelState.IsValid)
             {
@@ -80,7 +81,7 @@ namespace DarkCloud.Controllers
                             var nombreArchivo = Path.GetFileNameWithoutExtension(archivo.FileName);
                             var extension = Path.GetExtension(archivo.FileName);
                             var nombreUnico = $"galeria_{Guid.NewGuid()}{extension}";
-                            var rutaGuardado = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", nombreUnico);
+                            var rutaGuardado = Path.Combine(imagesPath, nombreUnico);
                             using (var stream = new FileStream(rutaGuardado, FileMode.Create))
                             {
                                 archivo.CopyTo(stream);
@@ -88,7 +89,7 @@ namespace DarkCloud.Controllers
                             var img = new ProductoImagen
                             {
                                 ProductoId = producto.Id,
-                                Url = $"/images/{nombreUnico}",
+                                Url = $"/images/{nombreUnico.Replace(" ", "%20")}",
                                 Orden = orden++
                             };
                             _context.ProductoImagenes.Add(img);
@@ -136,12 +137,12 @@ namespace DarkCloud.Controllers
                 var nombreArchivo = Path.GetFileNameWithoutExtension(ImagenArchivo.FileName);
                 var extension = Path.GetExtension(ImagenArchivo.FileName);
                 var nombreUnico = $"{nombreArchivo}_{Guid.NewGuid()}{extension}";
-                var rutaGuardado = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", nombreUnico);
+                var rutaGuardado = Path.Combine(imagesPath, nombreUnico);
                 using (var stream = new FileStream(rutaGuardado, FileMode.Create))
                 {
                     ImagenArchivo.CopyTo(stream);
                 }
-                productoDb.ImagenUrl = $"/images/{nombreUnico}";
+                productoDb.ImagenUrl = $"/images/{nombreUnico.Replace(" ", "%20")}";
             }
 
             // Eliminar imágenes de galería marcadas
@@ -162,7 +163,7 @@ namespace DarkCloud.Controllers
                         var nombreArchivo = Path.GetFileNameWithoutExtension(archivo.FileName);
                         var extension = Path.GetExtension(archivo.FileName);
                         var nombreUnico = $"galeria_{Guid.NewGuid()}{extension}";
-                        var rutaGuardado = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", nombreUnico);
+                        var rutaGuardado = Path.Combine(imagesPath, nombreUnico);
                         using (var stream = new FileStream(rutaGuardado, FileMode.Create))
                         {
                             archivo.CopyTo(stream);
@@ -170,7 +171,7 @@ namespace DarkCloud.Controllers
                         var img = new ProductoImagen
                         {
                             ProductoId = productoDb.Id,
-                            Url = $"/images/{nombreUnico}",
+                            Url = $"/images/{nombreUnico.Replace(" ", "%20")}",
                             Orden = orden++
                         };
                         _context.ProductoImagenes.Add(img);
