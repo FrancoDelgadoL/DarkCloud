@@ -42,6 +42,12 @@ namespace DarkCloud.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AgregarProducto(Producto producto, IFormFile ImagenArchivo, List<IFormFile> GaleriaArchivos)
         {
+            // Asegurar que la carpeta wwwroot/images existe
+            var imagesPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
+            if (!Directory.Exists(imagesPath))
+            {
+                Directory.CreateDirectory(imagesPath);
+            }
             // Procesar categorías especiales (multiselección)
             if (Request.Form["CategoriasEspeciales"].Count > 0)
             {
