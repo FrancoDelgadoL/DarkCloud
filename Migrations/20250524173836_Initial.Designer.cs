@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DarkCloud.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250524173000_Initial")]
+    [Migration("20250524173836_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
