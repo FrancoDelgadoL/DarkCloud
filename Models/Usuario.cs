@@ -7,15 +7,15 @@ namespace DarkCloud.Models
         [Key]
         public int Id { get; set; }
         [Required, MaxLength(100)]
-        public string Nombre { get; set; }
+        public required string Nombre { get; set; }
         [Required, MaxLength(100)]
-        public string Apellido { get; set; }
+        public required string Apellido { get; set; }
         [Required, MaxLength(150)]
-        public string Email { get; set; }
+        public required string Email { get; set; }
         [Required]
-        public string PasswordHash { get; set; }
+        public required string PasswordHash { get; set; }
         [Required, MaxLength(20)]
-        public string Rol { get; set; } // "Cliente" o "Administrador"
+        public required string Rol { get; set; } // "Cliente" o "Administrador"
         public DateTime FechaRegistro { get; set; } = DateTime.UtcNow;
     }
 }
