@@ -89,7 +89,7 @@ app.MapControllerRoute(
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    // Log para depuración: listar archivos de la carpeta Migrations
+    // Log de diagnóstico avanzado para Render
     try
     {
         var migrationsPath = Path.Combine(AppContext.BaseDirectory, "Migrations");
@@ -108,6 +108,22 @@ using (var scope = app.Services.CreateScope())
     catch (Exception ex)
     {
         Console.WriteLine($"Error al listar archivos de migración: {ex.Message}");
+    }
+    // Diagnóstico: mostrar migraciones pendientes y aplicadas
+    try
+    {
+        var pending = db.Database.GetPendingMigrations();
+        Console.WriteLine("Migraciones pendientes detectadas por EF Core:");
+        foreach (var m in pending)
+            Console.WriteLine(" - " + m);
+        var applied = db.Database.GetAppliedMigrations();
+        Console.WriteLine("Migraciones ya aplicadas:");
+        foreach (var m in applied)
+            Console.WriteLine(" - " + m);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error al obtener migraciones: {ex.Message}");
     }
     db.Database.Migrate();
 }
