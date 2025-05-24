@@ -15,14 +15,18 @@ var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 if (!string.IsNullOrEmpty(databaseUrl))
 {
     var uri = new Uri(databaseUrl);
+    if (uri.Port == -1)
+    {
+        Console.WriteLine("ERROR: La variable DATABASE_URL no contiene un puerto válido. Ejemplo correcto: postgres://usuario:contraseña@host:5432/nombre_db");
+        Environment.Exit(1);
+    }
     var userInfo = uri.UserInfo.Split(':');
     var npgsqlConn =
         $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};Ssl Mode=Require;Trust Server Certificate=true";
     pgConn = npgsqlConn;
 }
 
-//bool usePostgres = true;
-bool usePostgres = true; // Forzar PostgreSQL para migraciones
+//bool usePostgres = true; // Línea eliminada, ya no se usa
 //try
 //{
 //    // Intentar abrir una conexión a PostgreSQL
