@@ -6,15 +6,18 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.Identity;
 
 namespace DarkCloud.Controllers
 {
     public class AdministradorController : Controller
     {
         private readonly ApplicationDbContext _context;
-        public AdministradorController(ApplicationDbContext context)
+        private readonly UserManager<Usuario> _userManager;
+        public AdministradorController(ApplicationDbContext context, UserManager<Usuario> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public IActionResult Index()
@@ -257,7 +260,7 @@ namespace DarkCloud.Controllers
         [HttpGet]
         public IActionResult Usuarios()
         {
-            var usuarios = _context.Usuarios.ToList();
+            var usuarios = _userManager.Users.ToList();
             return View(usuarios);
         }
 
@@ -269,31 +272,36 @@ namespace DarkCloud.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CrearUsuario(string nombre, string apellido, string email, string password, string rol)
+        public async Task<IActionResult> CrearUsuario(string nombre, string apellido, string email, string password, string rol)
         {
             if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(apellido) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(rol))
             {
                 TempData["Error"] = "Todos los campos son obligatorios.";
                 return View();
             }
-            if (_context.Usuarios.Any(u => u.Email == email))
+            var existe = await _userManager.FindByEmailAsync(email);
+            if (existe != null)
             {
                 TempData["Error"] = "El correo ya está registrado.";
                 return View();
             }
             var usuario = new Usuario
             {
+                UserName = email,
+                Email = email,
                 Nombre = nombre,
                 Apellido = apellido,
-                Email = email,
-                PasswordHash = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(password))),
                 Rol = rol,
                 FechaRegistro = DateTime.UtcNow
             };
-            _context.Usuarios.Add(usuario);
-            _context.SaveChanges();
-            TempData["Mensaje"] = "Usuario creado correctamente.";
-            return RedirectToAction("Usuarios");
+            var result = await _userManager.CreateAsync(usuario, password);
+            if (result.Succeeded)
+            {
+                TempData["Mensaje"] = "Usuario creado correctamente.";
+                return RedirectToAction("Usuarios");
+            }
+            TempData["Error"] = string.Join(", ", result.Errors.Select(e => e.Description));
+            return View();
         }
     }
 }

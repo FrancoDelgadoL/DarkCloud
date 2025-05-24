@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using DarkCloud.Models;
 using System.Security.Cryptography;
@@ -7,10 +8,12 @@ namespace DarkCloud.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        public AccountController(ApplicationDbContext context)
+        private readonly UserManager<Usuario> _userManager;
+        private readonly SignInManager<Usuario> _signInManager;
+        public AccountController(UserManager<Usuario> userManager, SignInManager<Usuario> signInManager)
         {
-            _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         // Acción para mostrar la página de inicio de sesión
@@ -27,35 +30,40 @@ namespace DarkCloud.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(string nombre, string apellido, string email, string password)
+        public async Task<IActionResult> Register(string nombre, string apellido, string email, string password)
         {
             if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(apellido) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             {
                 TempData["Error"] = "Todos los campos son obligatorios.";
                 return View();
             }
-            if (_context.Usuarios.Any(u => u.Email == email))
+            var existe = await _userManager.FindByEmailAsync(email);
+            if (existe != null)
             {
                 TempData["Error"] = "El correo ya está registrado.";
                 return View();
             }
             var usuario = new Usuario
             {
+                UserName = email,
+                Email = email,
                 Nombre = nombre,
                 Apellido = apellido,
-                Email = email,
-                PasswordHash = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(password))),
                 Rol = "Cliente",
                 FechaRegistro = DateTime.UtcNow
             };
-            _context.Usuarios.Add(usuario);
-            _context.SaveChanges();
-            TempData["Mensaje"] = "Cuenta creada correctamente. Inicia sesión.";
-            return RedirectToAction("Login");
+            var result = await _userManager.CreateAsync(usuario, password);
+            if (result.Succeeded)
+            {
+                TempData["Mensaje"] = "Cuenta creada correctamente. Inicia sesión.";
+                return RedirectToAction("Login");
+            }
+            TempData["Error"] = string.Join(", ", result.Errors.Select(e => e.Description));
+            return View();
         }
 
         [HttpPost]
-        public IActionResult Login(string email, string password, string? returnUrl = null)
+        public async Task<IActionResult> Login(string email, string password, string? returnUrl = null)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             {
@@ -63,17 +71,20 @@ namespace DarkCloud.Controllers
                 ViewData["ReturnUrl"] = returnUrl;
                 return View();
             }
-            var hash = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(password)));
-            var usuario = _context.Usuarios.FirstOrDefault(u => u.Email == email && u.PasswordHash == hash);
-            if (usuario == null)
+            var result = await _signInManager.PasswordSignInAsync(email, password, false, false);
+            if (!result.Succeeded)
             {
                 TempData["Error"] = "Credenciales incorrectas.";
                 ViewData["ReturnUrl"] = returnUrl;
                 return View();
             }
-            HttpContext.Session.SetString("UsuarioId", usuario.Id.ToString());
-            HttpContext.Session.SetString("UsuarioNombre", usuario.Nombre);
-            HttpContext.Session.SetString("UsuarioRol", usuario.Rol);
+            var usuario = await _userManager.FindByEmailAsync(email);
+            if (usuario != null)
+            {
+                HttpContext.Session.SetString("UsuarioId", usuario.Id);
+                HttpContext.Session.SetString("UsuarioNombre", usuario.Nombre);
+                HttpContext.Session.SetString("UsuarioRol", usuario.Rol);
+            }
             if (!string.IsNullOrEmpty(returnUrl))
             {
                 return Redirect(returnUrl);
@@ -84,11 +95,16 @@ namespace DarkCloud.Controllers
                 HttpContext.Session.Remove("ReturnToAfterLogin");
                 return Redirect(returnTo);
             }
-            return RedirectToAction(usuario.Rol == "Administrador" ? "Index" : "Index", usuario.Rol == "Administrador" ? "Administrador" : "Home");
+            if (usuario != null)
+            {
+                return RedirectToAction(usuario.Rol == "Administrador" ? "Index" : "Index", usuario.Rol == "Administrador" ? "Administrador" : "Home");
+            }
+            return RedirectToAction("Index", "Home");
         }
 
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
+            await _signInManager.SignOutAsync();
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
         }
