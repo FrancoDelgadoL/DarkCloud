@@ -151,7 +151,7 @@ public class HomeController : Controller
             .OrderBy(i => i.Orden)
             .Select(i => i.Url)
             .ToList();
-        ViewBag.ImagenesGaleria = imagenesGaleria;
+        ViewBag.ImagenesGaleria = (object)imagenesGaleria;
         return View(producto);
     }
 
