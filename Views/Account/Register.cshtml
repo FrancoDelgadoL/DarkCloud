@@ -3,8 +3,8 @@
     Layout = "../Shared/_Layout.cshtml";
 }
 <div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-    <div class="card shadow-lg p-4" style="background:#181a1b; min-width:340px; max-width:400px; width:100%; border-radius:18px; border:1px solid #333;">
-        <h2 class="text-center mb-4" style="color:#ffd600; font-weight:700; letter-spacing:1px;">Registrar Cuenta</h2>
+    <div class="card shadow-lg p-4 register-card-modern">
+        <h2 class="text-center mb-4 register-title">Registrar Cuenta</h2>
         @if (TempData["Error"] != null) {
             <div class="alert alert-danger">@TempData["Error"]</div>
         }
@@ -15,28 +15,65 @@
             <div class="mb-3">
                 <div class="input-group">
                     <span class="input-group-text bg-dark text-secondary border-0"><i class="fas fa-user"></i></span>
-                    <input id="reg-nombre" type="text" class="form-control bg-dark text-white border-0" name="nombre" placeholder="Nombre" required style="border:1px solid #444;" autocomplete="given-name">
+                    <input id="reg-nombre" type="text" class="form-control bg-dark text-white border-0 register-input" name="nombre" placeholder="Nombre" required autocomplete="given-name">
                 </div>
             </div>
             <div class="mb-3">
                 <div class="input-group">
                     <span class="input-group-text bg-dark text-secondary border-0"><i class="fas fa-user"></i></span>
-                    <input id="reg-apellido" type="text" class="form-control bg-dark text-white border-0" name="apellido" placeholder="Apellido" required style="border:1px solid #444;" autocomplete="family-name">
+                    <input id="reg-apellido" type="text" class="form-control bg-dark text-white border-0 register-input" name="apellido" placeholder="Apellido" required autocomplete="family-name">
                 </div>
             </div>
             <div class="mb-3">
                 <div class="input-group">
                     <span class="input-group-text bg-dark text-secondary border-0"><i class="fas fa-envelope"></i></span>
-                    <input id="reg-email" type="email" class="form-control bg-dark text-white border-0" name="email" placeholder="Correo Electrónico" required style="border:1px solid #444;" autocomplete="email">
+                    <input id="reg-email" type="email" class="form-control bg-dark text-white border-0 register-input" name="email" placeholder="Correo Electrónico" required autocomplete="email">
                 </div>
             </div>
             <div class="mb-3">
                 <div class="input-group">
                     <span class="input-group-text bg-dark text-secondary border-0"><i class="fas fa-lock"></i></span>
-                    <input id="reg-password" type="password" class="form-control bg-dark text-white border-0" name="password" placeholder="Contraseña" required style="border:1px solid #444;" autocomplete="new-password">
+                    <input id="reg-password" type="password" class="form-control bg-dark text-white border-0 register-input" name="password" placeholder="Contraseña" required autocomplete="new-password">
                 </div>
             </div>
-            <button type="submit" class="btn btn-warning w-100 fw-bold">Crear Cuenta</button>
+            <button type="submit" class="btn btn-primary w-100 fw-bold register-btn">Crear Cuenta</button>
         </form>
     </div>
 </div>
+<style>
+.register-card-modern {
+  background: #181a1b;
+  min-width: 340px;
+  max-width: 400px;
+  width: 100%;
+  border-radius: 18px;
+  border: 1.5px solid #7c4dff;
+  box-shadow: 0 0 24px #00fff7a0, 0 2px 8px #7c4dff44;
+}
+.register-title {
+  color: #ffd600;
+  font-family: 'Orbitron',sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.register-input {
+  border: 1.5px solid #7c4dff;
+  border-radius: 10px;
+  background: #232526;
+  color: #fff;
+  font-size: 1.1rem;
+}
+.register-btn {
+  background: linear-gradient(90deg,#00fff7,#7c4dff);
+  color: #181a1b;
+  font-weight: 700;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 8px #7c4dff44;
+  border: none;
+}
+.register-btn:hover {
+  background: linear-gradient(90deg,#7c4dff,#00fff7);
+  color: #fff;
+}
+</style>

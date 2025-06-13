@@ -2,47 +2,33 @@
     ViewData["Title"] = "Crear Usuario";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="admin-panel d-flex">
-    <nav class="admin-sidebar bg-dark text-white p-4" style="min-width:220px; min-height:80vh;">
-        <h4 class="mb-4">Admin</h4>
-        <ul class="nav flex-column">
-            <li class="nav-item mb-2"><a class="nav-link text-white" href="/Administrador">Dashboard</a></li>
-            <li class="nav-item mb-2"><a class="nav-link text-white" href="/Administrador/Productos">Productos</a></li>
-            <li class="nav-item mb-2"><a class="nav-link text-white active" href="/Administrador/Usuarios">Usuarios</a></li>
-            <li class="nav-item mb-2"><a class="nav-link text-white" href="/Administrador/HomeHeroConfig">Config. Home</a></li>
-            <li class="nav-item mb-2"><a class="nav-link text-white" href="/">Volver a la tienda</a></li>
-        </ul>
-    </nav>
-    <main class="flex-fill p-4">
-        <h2 class="text-center mb-4" style="color:#ffd600; font-weight:700; letter-spacing:1px;">Crear Usuario</h2>
-        @if (TempData["Error"] != null) {
-            <div class="alert alert-danger">@TempData["Error"]</div>
-        }
-        <form method="post" action="/Administrador/CrearUsuario">
-            <div class="mb-3 input-group">
-                <span class="input-group-text bg-dark text-light border-0"><i class="fas fa-user"></i></span>
-                <input type="text" class="form-control bg-dark text-light border-0" name="nombre" placeholder="Nombre" required>
-            </div>
-            <div class="mb-3 input-group">
-                <span class="input-group-text bg-dark text-light border-0"><i class="fas fa-user"></i></span>
-                <input type="text" class="form-control bg-dark text-light border-0" name="apellido" placeholder="Apellido" required>
-            </div>
-            <div class="mb-3 input-group">
-                <span class="input-group-text bg-dark text-light border-0"><i class="fas fa-envelope"></i></span>
-                <input type="email" class="form-control bg-dark text-light border-0" name="email" placeholder="Correo Electrónico" required>
-            </div>
-            <div class="mb-3 input-group">
-                <span class="input-group-text bg-dark text-light border-0"><i class="fas fa-lock"></i></span>
-                <input type="password" class="form-control bg-dark text-light border-0" name="password" placeholder="Contraseña" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label text-light">Rol</label>
-                <select name="rol" class="form-select bg-dark text-light" required>
-                    <option value="Cliente">Cliente</option>
-                    <option value="Administrador">Administrador</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary w-100 fw-bold">Crear Usuario</button>
-        </form>
-    </main>
-</div>
+<h2 class="text-center mb-4" style="color:#ffd600; font-weight:700; letter-spacing:1px;">Crear Usuario</h2>
+@if (TempData["Error"] != null) {
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+<form method="post" action="/Administrador/CrearUsuario">
+    <div class="mb-3 input-group">
+        <span class="input-group-text bg-dark text-light border-0"><i class="fas fa-user"></i></span>
+        <input type="text" class="form-control bg-dark text-light border-0" name="nombre" placeholder="Nombre" required>
+    </div>
+    <div class="mb-3 input-group">
+        <span class="input-group-text bg-dark text-light border-0"><i class="fas fa-user"></i></span>
+        <input type="text" class="form-control bg-dark text-light border-0" name="apellido" placeholder="Apellido" required>
+    </div>
+    <div class="mb-3 input-group">
+        <span class="input-group-text bg-dark text-light border-0"><i class="fas fa-envelope"></i></span>
+        <input type="email" class="form-control bg-dark text-light border-0" name="email" placeholder="Correo Electrónico" required>
+    </div>
+    <div class="mb-3 input-group">
+        <span class="input-group-text bg-dark text-light border-0"><i class="fas fa-lock"></i></span>
+        <input type="password" class="form-control bg-dark text-light border-0" name="password" placeholder="Contraseña" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label text-light">Rol</label>
+        <select name="rol" class="form-select bg-dark text-light" required>
+            <option value="Cliente">Cliente</option>
+            <option value="Administrador">Administrador</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary w-100 fw-bold">Crear Usuario</button>
+</form>

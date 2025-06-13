@@ -20,6 +20,11 @@ namespace DarkCloud.Controllers
         public IActionResult Login(string? returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+            // Si viene de intento de añadir al carrito, mostrar mensaje
+            if (!string.IsNullOrEmpty(returnUrl) && returnUrl.Contains("/Home/Producto"))
+            {
+                TempData["Error"] = "Primero debes iniciar sesión como cliente para poder añadir productos al carrito.";
+            }
             return View();
         }
 
@@ -47,6 +52,7 @@ namespace DarkCloud.Controllers
             {
                 UserName = email,
                 Email = email,
+                EmailConfirmed = true, // Permitir login inmediato
                 Nombre = nombre,
                 Apellido = apellido,
                 Rol = "Cliente",
@@ -71,35 +77,29 @@ namespace DarkCloud.Controllers
                 ViewData["ReturnUrl"] = returnUrl;
                 return View();
             }
-            var result = await _signInManager.PasswordSignInAsync(email, password, false, false);
+            var usuario = await _userManager.FindByEmailAsync(email);
+            if (usuario == null || string.IsNullOrEmpty(usuario.UserName))
+            {
+                TempData["Error"] = "Credenciales incorrectas.";
+                ViewData["ReturnUrl"] = returnUrl;
+                return View();
+            }
+            var result = await _signInManager.PasswordSignInAsync(usuario.UserName, password, false, false);
             if (!result.Succeeded)
             {
                 TempData["Error"] = "Credenciales incorrectas.";
                 ViewData["ReturnUrl"] = returnUrl;
                 return View();
             }
-            var usuario = await _userManager.FindByEmailAsync(email);
-            if (usuario != null)
-            {
-                HttpContext.Session.SetString("UsuarioId", usuario.Id);
-                HttpContext.Session.SetString("UsuarioNombre", usuario.Nombre);
-                HttpContext.Session.SetString("UsuarioRol", usuario.Rol);
-            }
-            if (!string.IsNullOrEmpty(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            var returnTo = HttpContext.Session.GetString("ReturnToAfterLogin");
-            if (!string.IsNullOrEmpty(returnTo))
-            {
-                HttpContext.Session.Remove("ReturnToAfterLogin");
-                return Redirect(returnTo);
-            }
-            if (usuario != null)
-            {
-                return RedirectToAction(usuario.Rol == "Administrador" ? "Index" : "Index", usuario.Rol == "Administrador" ? "Administrador" : "Home");
-            }
-            return RedirectToAction("Index", "Home");
+            HttpContext.Session.SetString("UsuarioId", usuario.Id);
+            HttpContext.Session.SetString("UsuarioNombre", usuario.Nombre);
+            HttpContext.Session.SetString("UsuarioRol", usuario.Rol);
+            // Guardar nombre en TempData para el JS
+            TempData["NombreUsuario"] = usuario.Nombre;
+            // Guardar email en TempData para el JS
+            TempData["EmailUsuario"] = usuario.Email;
+            // Redirigir a login con guardacuenta=1 para activar prompt JS
+            return Redirect($"/Account/Login?guardacuenta=1");
         }
 
         public async Task<IActionResult> Logout()

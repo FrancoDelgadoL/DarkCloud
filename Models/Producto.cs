@@ -20,6 +20,10 @@ namespace DarkCloud.Models
         public string? ClasificacionEdad { get; set; }
         public string? CategoriasEspeciales { get; set; } // Puede ser múltiple, separado por comas
 
+        public DateTime? OfertaInicio { get; set; }
+        public DateTime? OfertaFin { get; set; }
+        public int? DuracionOfertaHoras { get; set; }
+
         public virtual ICollection<ProductoImagen> Imagenes { get; set; } = new List<ProductoImagen>();
     }
 }

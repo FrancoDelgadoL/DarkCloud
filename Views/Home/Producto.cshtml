@@ -1,5 +1,6 @@
 @model DarkCloud.Models.Producto
 @using Microsoft.AspNetCore.Identity
+@using DarkCloud.Models
 @inject SignInManager<Usuario> SignInManager
 @{
     ViewData["Title"] = Model.Nombre;
@@ -9,51 +10,66 @@
     {
         imagenes = new List<string> { Model.ImagenUrl ?? "/images/no-image.png" };
     }
+    var ahora = DateTime.UtcNow;
+    bool ofertaActiva = Model.EsOferta && Model.Descuento.HasValue && Model.PrecioReal.HasValue && Model.PrecioReal > 0 && Model.Descuento > 0 && Model.Precio > 0 && Model.Precio < Model.PrecioReal && Model.OfertaFin.HasValue && Model.OfertaFin.Value > ahora;
 }
 <div class="container my-5">
     <div class="row justify-content-center align-items-center g-5">
         <!-- Galería de imágenes -->
         <div class="col-lg-5 col-md-6 text-center">
-            <div class="bg-dark rounded-4 shadow p-4 mb-4">
+            <div class="bg-white rounded-4 shadow p-4 mb-4 border border-2 border-primary neon-card">
                 <div id="main-image-container" class="mb-3">
-                    <img id="main-image" src="@imagenes[0]" alt="@Model.Nombre" class="img-fluid rounded-3 border border-secondary" style="max-width: 350px; max-height: 350px; object-fit: contain; background: #23272b; cursor: zoom-in; transition: box-shadow 0.2s;">
+                    <img id="main-image" src="@imagenes[0]" alt="@Model.Nombre" class="img-fluid rounded-3 border border-secondary" style="max-width: 350px; max-height: 350px; object-fit: contain; background: #f5f5f5; cursor: zoom-in; transition: box-shadow 0.2s;">
                 </div>
                 <div class="d-flex justify-content-center gap-2">
                     @for (int i = 0; i < imagenes.Count; i++) {
-                        <img src="@imagenes[i]" class="img-thumbnail border-2" style="width: 60px; height: 60px; object-fit: cover; cursor:pointer; background: #23272b;" onclick="document.getElementById('main-image').src='@imagenes[i]'">
+                        <img src="@imagenes[i]" class="img-thumbnail border-2" style="width: 60px; height: 60px; object-fit: cover; cursor:pointer; background: #f5f5f5; border:2px solid #2196f3;" onclick="document.getElementById('main-image').src='@imagenes[i]'">
                     }
                 </div>
             </div>
         </div>
         <!-- Detalle y compra -->
         <div class="col-lg-5 col-md-6">
-            <div class="bg-dark rounded-4 shadow p-4">
-                <h2 class="mb-3 fw-bold text-warning">@Model.Nombre</h2>
-                <p class="fs-3 text-info fw-bold mb-1">S/ @Model.Precio</p>
-                <p class="text-light mb-3">@Model.Descripcion</p>
+            <div class="bg-white rounded-4 shadow p-4 border border-2 border-primary neon-card">
+                <h2 class="mb-3 fw-bold text-primary" style="font-family:'Orbitron',sans-serif; letter-spacing:1px;">@Model.Nombre</h2>
+                @if (ofertaActiva && Model.Descuento.HasValue && Model.PrecioReal.HasValue)
+                {
+                    <p class="fs-3 text-danger fw-bold mb-1">S/ @Model.Precio <span class="badge bg-danger ms-2">-@Model.Descuento.Value.ToString("0")%</span></p>
+                    <p class="text-muted mb-1"><s>S/ @Model.PrecioReal.Value.ToString("0.00")</s></p>
+                }
+                else if (Model.Precio > 0)
+                {
+                    <p class="fs-3 text-success fw-bold mb-1">S/ @Model.Precio</p>
+                    @if (Model.EsOferta) { <span class="badge bg-danger ms-2">Oferta</span> }
+                }
+                else if (Model.PrecioReal.HasValue && Model.PrecioReal.Value > 0)
+                {
+                    <p class="fs-3 text-success fw-bold mb-1">S/ @Model.PrecioReal.Value.ToString("0.00")</p>
+                }
+                <p class="text-dark mb-3" style="font-size:1.1rem; font-family:'Montserrat',sans-serif;">@Model.Descripcion</p>
                 <!-- Ficha técnica -->
                 <div class="mb-4">
-                    <h5 class="fw-bold text-secondary mb-2">Ficha técnica</h5>
-                    <table class="table table-dark table-striped rounded-3 overflow-hidden" style="font-size:1rem;">
+                    <h5 class="fw-bold text-primary mb-2" style="font-family:'Orbitron',sans-serif;">Ficha técnica</h5>
+                    <table class="table table-bordered rounded-3 overflow-hidden" style="font-size:1rem; background:#f8f9fa;">
                         <tbody>
-                            <tr><td class="fw-bold text-secondary">Género</td><td>@Model.Genero</td></tr>
-                            <tr><td class="fw-bold text-secondary">Plataforma</td><td>@Model.Plataforma</td></tr>
-                            <tr><td class="fw-bold text-secondary">Tipo</td><td>@Model.TipoProducto</td></tr>
-                            <tr><td class="fw-bold text-secondary">Modo</td><td>@Model.ModoJuego</td></tr>
-                            <tr><td class="fw-bold text-secondary">Clasificación</td><td>@Model.ClasificacionEdad</td></tr>
+                            <tr><td class="fw-bold text-primary">Género</td><td class="text-dark">@Model.Genero</td></tr>
+                            <tr><td class="fw-bold text-primary">Plataforma</td><td class="text-dark">@Model.Plataforma</td></tr>
+                            <tr><td class="fw-bold text-primary">Tipo</td><td class="text-dark">@Model.TipoProducto</td></tr>
+                            <tr><td class="fw-bold text-primary">Modo</td><td class="text-dark">@Model.ModoJuego</td></tr>
+                            <tr><td class="fw-bold text-primary">Clasificación</td><td class="text-dark">@Model.ClasificacionEdad</td></tr>
                         </tbody>
                     </table>
                 </div>
                 <form id="form-add-cart" method="post" action="/Home/AddToCart" class="mb-0">
                     <div class="mb-4 d-flex align-items-center justify-content-center gap-3">
-                        <label for="cantidad" class="form-label mb-0 fw-bold text-white">Cantidad</label>
+                        <label for="cantidad" class="form-label mb-0 fw-bold text-primary">Cantidad</label>
                         <div class="input-group flex-nowrap" style="width: 140px;">
-                            <button type="button" class="btn btn-outline-secondary btn-sm fw-bold" id="btn-restar" tabindex="-1" style="font-size:1.3rem;">-</button>
-                            <input type="number" name="cantidad" id="cantidad" class="form-control text-center fw-bold bg-dark text-warning border border-secondary" value="1" min="1" max="10" style="font-size:1.3rem; border-radius:0; appearance: none; -webkit-appearance: none; -moz-appearance: textfield;" autocomplete="off">
-                            <button type="button" class="btn btn-outline-secondary btn-sm fw-bold" id="btn-sumar" tabindex="-1" style="font-size:1.3rem;">+</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm fw-bold" id="btn-restar" tabindex="-1" style="font-size:1.3rem;">-</button>
+                            <input type="number" name="cantidad" id="cantidad" class="form-control text-center fw-bold bg-white text-primary border border-primary" value="1" min="1" max="10" style="font-size:1.3rem; border-radius:0; appearance: none; -webkit-appearance: none; -moz-appearance: textfield;" autocomplete="off">
+                            <button type="button" class="btn btn-outline-primary btn-sm fw-bold" id="btn-sumar" tabindex="-1" style="font-size:1.3rem;">+</button>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-lg btn-success w-100 fw-bold shadow-sm" style="font-size:1.2rem; letter-spacing:1px;">Añadir al carrito <i class="fas fa-cart-plus ms-2"></i></button>
+                    <button type="submit" class="btn btn-lg btn-primary w-100 fw-bold shadow-sm" style="font-size:1.2rem; letter-spacing:1px;">Añadir al carrito <i class="fas fa-cart-plus ms-2"></i></button>
                 </form>
                 <div id="cart-feedback" class="mt-4 d-flex flex-column align-items-center justify-content-center"></div>
             </div>
@@ -63,6 +79,15 @@
     <div id="cart-feedback-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(10,10,10,0.65); z-index:2000; align-items:center; justify-content:center;"></div>
 </div>
 <style>
+.neon-card {
+  border-radius: 18px;
+  box-shadow: 0 0 16px #7c4dff44, 0 4px 32px #0002;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.neon-card:hover {
+  box-shadow: 0 0 32px #18ffff99, 0 8px 32px #0004;
+  transform: translateY(-6px) scale(1.03);
+}
 input[type=number]::-webkit-inner-spin-button, 
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
@@ -76,91 +101,136 @@ input[type=number] {
   cursor: zoom-in;
 }
 </style>
+
 @section Scripts {
 <script>
-document.getElementById('btn-restar').onclick = function() {
-    var input = document.getElementById('cantidad');
-    var val = parseInt(input.value) || 1;
-    if(val > 1) input.value = val - 1;
-};
-document.getElementById('btn-sumar').onclick = function() {
-    var input = document.getElementById('cantidad');
-    var val = parseInt(input.value) || 1;
-    if(val < 10) input.value = val + 1;
-};
-const feedbackOverlay = document.getElementById('cart-feedback-overlay');
-document.getElementById('form-add-cart').onsubmit = async function(e) {
-    e.preventDefault();
-    const form = e.target;
-    const data = new URLSearchParams(new FormData(form));
-    const res = await fetch(form.action, { method: 'POST', body: data });
-    const json = await res.json();
-    if (json.success) {
-        // --- GUARDAR EN LOCALSTORAGE PARA EL CARRITO VISUAL ---
-        let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-        const prodId = @Model.Id;
-        const prodNombre = "@Model.Nombre?.Replace("\"", "\\\"")";
-        const prodDescripcion = "@Model.Descripcion?.Replace("\"", "\\\"")";
-        const prodImagen = "@Model.ImagenUrl";
-        const prodPrecio = @Model.Precio;
-        let cantidad = parseInt(document.getElementById('cantidad').value) || 1;
-        let existe = carrito.find(p => p.id === prodId);
-        if (existe) {
-            existe.cantidad += cantidad;
+// Todo el código JS debe ir dentro de <script> para evitar que Razor lo interprete
+// y debe usarse correctamente la interpolación de Razor para los datos del modelo
+
+(function() {
+  function safeBindCantidadBtns() {
+    var btnRestar = document.getElementById('btn-restar');
+    var btnSumar = document.getElementById('btn-sumar');
+    var inputCantidad = document.getElementById('cantidad');
+    if (!btnRestar || !btnSumar || !inputCantidad) return;
+    btnRestar.onclick = function() {
+      var val = parseInt(inputCantidad.value) || 1;
+      if(val > 1) inputCantidad.value = val - 1;
+    };
+    btnSumar.onclick = function() {
+      var val = parseInt(inputCantidad.value) || 1;
+      if(val < 10) inputCantidad.value = val + 1;
+    };
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    safeBindCantidadBtns();
+    var feedbackOverlay = document.getElementById('cart-feedback-overlay');
+    var formAddCart = document.getElementById('form-add-cart');
+    if (!formAddCart) return;
+    formAddCart.onsubmit = async function(e) {
+      e.preventDefault();
+      var form = e.target;
+      var data = new URLSearchParams(new FormData(form));
+      var res, json;
+      try {
+        res = await fetch(form.action, {
+          method: 'POST',
+          body: data,
+          headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        var contentType = res.headers.get('content-type');
+        if (contentType && contentType.indexOf('application/json') !== -1) {
+          json = await res.json();
         } else {
-            carrito.push({ id: prodId, nombre: prodNombre, descripcion: prodDescripcion, imagenUrl: prodImagen, precio: prodPrecio, cantidad: cantidad });
+          throw new Error('Respuesta inesperada del servidor.');
+        }
+      } catch (err) {
+        feedbackOverlay.style.display = 'flex';
+        feedbackOverlay.innerHTML = "<div class='bg-danger text-white p-4 rounded-4 shadow-lg text-center fade show' style='font-size:1.1rem; min-width:320px; max-width:90vw;'>Ocurrió un error inesperado. Intenta iniciar sesión nuevamente.<br><a href='/Account/Login?returnUrl=" + encodeURIComponent(window.location.pathname) + "' class='btn btn-primary btn-lg mt-4 fw-bold shadow'>Iniciar sesión</a></div>";
+        feedbackOverlay.onclick = function(ev) {
+          if(ev.target === feedbackOverlay) { feedbackOverlay.style.display = 'none'; feedbackOverlay.innerHTML = ''; }
+        };
+        return;
+      }
+      if (json.loginRequired) {
+        feedbackOverlay.style.display = 'flex';
+        feedbackOverlay.innerHTML = "<div class='bg-danger text-white p-4 rounded-4 shadow-lg text-center fade show' style='font-size:1.1rem; min-width:320px; max-width:90vw;'>" +
+          "<i class='fas fa-exclamation-triangle fa-2x mb-2 text-warning'></i><br>Primero debes iniciar sesión como cliente para poder añadir productos al carrito.<br><a href='/Account/Login?returnUrl=" + encodeURIComponent(window.location.pathname) + "' class='btn btn-primary btn-lg mt-4 fw-bold shadow'>Iniciar sesión</a>" +
+        "</div>";
+        feedbackOverlay.onclick = function(ev) {
+          if(ev.target === feedbackOverlay) { feedbackOverlay.style.display = 'none'; feedbackOverlay.innerHTML = ''; }
+        };
+        return;
+      }
+      if (json.success) {
+        var carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+        var prodId = @Model.Id;
+        var prodNombre = "@Model.Nombre?.Replace("\"", "")";
+        var prodDescripcion = "@Model.Descripcion?.Replace("\"", "")";
+        var prodImagen = "@Model.ImagenUrl";
+        var prodPrecio = @Model.Precio;
+        var prodPrecioReal = '@(Model.PrecioReal?.ToString() ?? "null")';
+        var prodDescuento = '@(Model.Descuento?.ToString() ?? "null")';
+        var prodEsOferta = @Model.EsOferta.ToString().ToLower();
+        var prodOfertaFin = '@(Model.OfertaFin?.ToString("o") ?? "")';
+        var cantidad = parseInt(document.getElementById('cantidad').value) || 1;
+        var existe = carrito.find(function(p) { return p.id === prodId; });
+        if (existe) {
+          existe.cantidad += cantidad;
+          existe.tiempoAgregado = Date.now();
+        } else {
+          carrito.push({
+            id: prodId,
+            nombre: prodNombre,
+            descripcion: prodDescripcion,
+            imagenUrl: prodImagen,
+            precio: prodPrecio,
+            precioReal: prodPrecioReal !== "null" ? parseFloat(prodPrecioReal) : null,
+            descuento: prodDescuento !== "null" ? parseFloat(prodDescuento) : null,
+            esOferta: prodEsOferta === 'true',
+            ofertaFin: prodOfertaFin,
+            cantidad: cantidad,
+            tiempoAgregado: Date.now()
+          });
         }
         localStorage.setItem('carrito', JSON.stringify(carrito));
-        // Actualizar badge (siempre usar window.updateCartBadge para sincronizar con el nav)
-        let total = carrito.reduce((acc, p) => acc + (p.cantidad || 1), 0);
+        var total = carrito.reduce(function(acc, p) { return acc + (p.cantidad || 1); }, 0);
         if(window.updateCartBadge) window.updateCartBadge(total);
         feedbackOverlay.style.display = 'flex';
-        feedbackOverlay.innerHTML = `<div class='bg-dark text-white p-4 rounded-4 shadow-lg text-center fade show' style='font-size:1.1rem; min-width:320px; max-width:90vw;'>
-            <i class='fas fa-check-circle fa-2x mb-2 text-success'></i><br>Tu producto se ha añadido al carrito.
-            <div class='d-flex gap-3 justify-content-center mt-4'>
-                <a href='/Home/Carrito' class='btn btn-primary btn-lg fw-bold shadow'>Ir a pagar</a>
-                <button id='seguir-viendo' class='btn btn-outline-light btn-lg fw-bold shadow'>Seguir viendo</button>
-            </div>
-        </div>`;
+        feedbackOverlay.innerHTML = "<div class='bg-dark text-white p-4 rounded-4 shadow-lg text-center fade show' style='font-size:1.1rem; min-width:320px; max-width:90vw;'>" +
+          "<i class='fas fa-check-circle fa-2x mb-2 text-success'></i><br>Tu producto se ha añadido al carrito de compras." +
+          "<div class='d-flex gap-3 justify-content-center mt-4'>" +
+            "<a href='/Home/Carrito' class='btn btn-primary btn-lg fw-bold shadow'>Ir a pagar</a>" +
+            "<button id='seguir-viendo' class='btn btn-outline-light btn-lg fw-bold shadow'>Seguir viendo productos</button>" +
+          "</div>" +
+        "</div>";
         document.getElementById('seguir-viendo').onclick = function() {
-            feedbackOverlay.innerHTML = `<div class='bg-warning text-dark p-4 rounded-4 shadow-lg text-center fade show' style='font-size:1.05rem; min-width:320px; max-width:90vw;'>
-                <i class='fas fa-clock fa-lg mb-2 text-warning'></i><br>Tienes 1 minuto para realizar el pago del producto.<br>Si se pasa ese tiempo, se eliminará del carrito.<br><button class='btn btn-outline-secondary mt-3' id='aceptar-tiempo'>Aceptar</button></div>`;
-            document.getElementById('aceptar-tiempo').onclick = function() { feedbackOverlay.style.display = 'none'; feedbackOverlay.innerHTML = ''; };
+          feedbackOverlay.innerHTML = "<div class='bg-warning text-dark p-4 rounded-4 shadow-lg text-center fade show' style='font-size:1.05rem; min-width:320px; max-width:90vw;'>" +
+            "<i class='fas fa-clock fa-lg mb-2 text-warning'></i><br>Tienes 1 minuto para pagar, si no, automáticamente se borrará el producto de tu carrito de compras.<br><button class='btn btn-outline-secondary mt-3' id='aceptar-tiempo'>Aceptar</button></div>";
+          document.getElementById('aceptar-tiempo').onclick = function() { feedbackOverlay.style.display = 'none'; feedbackOverlay.innerHTML = ''; };
+          setTimeout(function() {
+            var carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+            var idx = carrito.findIndex(function(p) { return p.id === prodId; });
+            if(idx !== -1) {
+              carrito.splice(idx, 1);
+              localStorage.setItem('carrito', JSON.stringify(carrito));
+              var total = carrito.reduce(function(acc, p) { return acc + (p.cantidad || 1); }, 0);
+              if(window.updateCartBadge) window.updateCartBadge(total);
+            }
+          }, 60000);
         };
         feedbackOverlay.onclick = function(ev) {
-            if(ev.target === feedbackOverlay) { feedbackOverlay.style.display = 'none'; feedbackOverlay.innerHTML = ''; }
+          if(ev.target === feedbackOverlay) { feedbackOverlay.style.display = 'none'; feedbackOverlay.innerHTML = ''; }
         };
-    } else if(json.loginRequired) {
-        // Redirigir a login con returnUrl del producto
-        window.location.href = '/Account/Login?returnUrl=' + encodeURIComponent(window.location.pathname);
-    } else {
-        feedbackOverlay.style.display = 'flex';
-        feedbackOverlay.innerHTML = `<div class='bg-danger text-white p-4 rounded-4 shadow-lg text-center fade show' style='font-size:1.1rem; min-width:320px; max-width:90vw;'>${json.message || 'Error al añadir al carrito.'}</div>`;
-        feedbackOverlay.onclick = function(ev) {
-            if(ev.target === feedbackOverlay) { feedbackOverlay.style.display = 'none'; feedbackOverlay.innerHTML = ''; }
-        };
-    }
-};
-// Zoom al hacer click en la imagen principal
-const mainImg = document.getElementById('main-image');
-mainImg.onclick = function() {
-    if (!mainImg.classList.contains('zoomed')) {
-        mainImg.classList.add('zoomed');
-        mainImg.style.maxWidth = '90vw';
-        mainImg.style.maxHeight = '90vh';
-        mainImg.style.zIndex = 3000;
-        mainImg.style.position = 'relative';
-        mainImg.style.background = '#000';
-        mainImg.style.cursor = 'zoom-out';
-    } else {
-        mainImg.classList.remove('zoomed');
-        mainImg.style.maxWidth = '350px';
-        mainImg.style.maxHeight = '350px';
-        mainImg.style.zIndex = '';
-        mainImg.style.position = '';
-        mainImg.style.background = '#23272b';
-        mainImg.style.cursor = 'zoom-in';
-    }
-};
+        return;
+      }
+      feedbackOverlay.style.display = 'flex';
+      feedbackOverlay.innerHTML = "<div class='bg-danger text-white p-4 rounded-4 shadow-lg text-center fade show' style='font-size:1.1rem; min-width:320px; max-width:90vw;'>" + (json.message || 'Error al añadir al carrito.') + "</div>";
+      feedbackOverlay.onclick = function(ev) {
+        if(ev.target === feedbackOverlay) { feedbackOverlay.style.display = 'none'; feedbackOverlay.innerHTML = ''; }
+      };
+    };
+  });
+})();
 </script>
 }

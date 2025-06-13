@@ -1,0 +1,42 @@
+@model DarkCloud.Models.Usuario
+@{
+    ViewData["Title"] = "Editar Usuario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container d-flex justify-content-center align-items-center" style="min-height:80vh;">
+    <div class="card shadow-lg p-4" style="background:#f8f9fa; min-width:370px; max-width:540px; width:100%; border-radius:22px; border:1px solid #e0e0e0;">
+        <h2 class="text-center mb-4 fw-bold" style="color:#181a1b; letter-spacing:1px;"><i class="fas fa-user-edit me-2"></i>Editar Usuario</h2>
+        <form asp-action="EditarUsuario" method="post">
+            <input type="hidden" asp-for="Id" />
+            <div class="mb-3">
+                <label asp-for="Nombre" class="form-label fw-bold">Nombre</label>
+                <input asp-for="Nombre" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Apellido" class="form-label fw-bold">Apellido</label>
+                <input asp-for="Apellido" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label fw-bold">Correo electrónico</label>
+                <input asp-for="Email" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Rol" class="form-label fw-bold">Rol</label>
+                <select asp-for="Rol" class="form-select" required>
+                    <option value="Cliente">Cliente</option>
+                    <option value="Administrador">Administrador</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Nueva contraseña (opcional)</label>
+                <input type="password" name="NuevaPassword" class="form-control" placeholder="Dejar vacío para no cambiar" />
+                <small class="form-text text-muted">Déjalo vacío si no deseas cambiar la contraseña.</small>
+            </div>
+            <div class="d-flex justify-content-center gap-2 mt-4">
+                <button type="submit" class="btn btn-success btn-lg px-4 fw-bold shadow"><i class="fas fa-save me-2"></i>Guardar Cambios</button>
+                <a href="/Administrador/Usuarios" class="btn btn-secondary btn-lg px-4 fw-bold shadow"><i class="fas fa-arrow-left me-2"></i>Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />

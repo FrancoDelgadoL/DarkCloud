@@ -66,6 +66,30 @@ namespace DarkCloud.Controllers
                 // Guardar la URL codificada para el navegador
                 producto.ImagenUrl = $"/images/{nombreUnico.Replace(" ", "%20")}";
             }
+            // Procesar duración de la oferta
+            if (producto.EsOferta && int.TryParse(Request.Form["DuracionOfertaHoras"], out int duracionHoras))
+            {
+                producto.DuracionOfertaHoras = duracionHoras;
+                producto.OfertaInicio = DateTime.UtcNow;
+                producto.OfertaFin = producto.OfertaInicio.Value.AddHours(duracionHoras);
+            }
+            else
+            {
+                producto.DuracionOfertaHoras = null;
+                producto.OfertaInicio = null;
+                producto.OfertaFin = null;
+            }
+            // Calcular precio de oferta si corresponde
+            if (producto.EsOferta && producto.PrecioReal.HasValue && producto.Descuento.HasValue && producto.PrecioReal.Value > 0 && producto.Descuento.Value > 0)
+            {
+                producto.Precio = producto.PrecioReal.Value - (producto.PrecioReal.Value * producto.Descuento.Value / 100);
+            }
+            else
+            {
+                // Si no es oferta, el precio es igual al precio real
+                producto.Precio = producto.PrecioReal ?? 0;
+                producto.Descuento = null;
+            }
             if (ModelState.IsValid)
             {
                 _context.Productos.Add(producto);
@@ -99,6 +123,8 @@ namespace DarkCloud.Controllers
                 }
                 return RedirectToAction("Productos");
             }
+            if (producto.Imagenes == null)
+                producto.Imagenes = new List<ProductoImagen>();
             return View(producto);
         }
 
@@ -115,6 +141,13 @@ namespace DarkCloud.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult EditarProducto(Producto producto, IFormFile ImagenArchivo, List<IFormFile> GaleriaArchivos, int[] EliminarGaleriaIds)
         {
+            // Asegurar que la carpeta wwwroot/images existe
+            var imagesPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
+            if (!Directory.Exists(imagesPath))
+            {
+                Directory.CreateDirectory(imagesPath);
+            }
+
             var productoDb = _context.Productos.FirstOrDefault(p => p.Id == producto.Id);
             if (productoDb == null) return NotFound();
 
@@ -177,6 +210,32 @@ namespace DarkCloud.Controllers
                         _context.ProductoImagenes.Add(img);
                     }
                 }
+            }
+
+            // Procesar duración de la oferta
+            if (producto.EsOferta && int.TryParse(Request.Form["DuracionOfertaHoras"], out int duracionHoras))
+            {
+                productoDb.DuracionOfertaHoras = duracionHoras;
+                productoDb.OfertaInicio = DateTime.UtcNow;
+                productoDb.OfertaFin = productoDb.OfertaInicio.Value.AddHours(duracionHoras);
+            }
+            else
+            {
+                productoDb.DuracionOfertaHoras = null;
+                productoDb.OfertaInicio = null;
+                productoDb.OfertaFin = null;
+            }
+
+            // Calcular precio de oferta si corresponde (en edición)
+            if (productoDb.EsOferta && productoDb.PrecioReal.HasValue && productoDb.Descuento.HasValue && productoDb.PrecioReal.Value > 0 && productoDb.Descuento.Value > 0)
+            {
+                productoDb.Precio = productoDb.PrecioReal.Value - (productoDb.PrecioReal.Value * productoDb.Descuento.Value / 100);
+            }
+            else
+            {
+                // Si no es oferta, el precio es igual al precio real
+                productoDb.Precio = productoDb.PrecioReal ?? 0;
+                productoDb.Descuento = null;
             }
 
             _context.SaveChanges();
@@ -309,6 +368,45 @@ namespace DarkCloud.Controllers
             }
             TempData["Error"] = string.Join(", ", result.Errors.Select(e => e.Description));
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditarUsuario(string id)
+        {
+            var usuario = await _userManager.FindByIdAsync(id);
+            if (usuario == null) return NotFound();
+            return View(usuario);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditarUsuario(string id, string Nombre, string Apellido, string Email, string Rol, string? NuevaPassword)
+        {
+            var usuario = await _userManager.FindByIdAsync(id);
+            if (usuario == null) return NotFound();
+            usuario.Nombre = Nombre;
+            usuario.Apellido = Apellido;
+            usuario.Email = Email;
+            usuario.UserName = Email;
+            usuario.Rol = Rol;
+            var result = await _userManager.UpdateAsync(usuario);
+            if (!result.Succeeded)
+            {
+                TempData["Error"] = string.Join(", ", result.Errors.Select(e => e.Description));
+                return View(usuario);
+            }
+            if (!string.IsNullOrWhiteSpace(NuevaPassword))
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(usuario);
+                var passResult = await _userManager.ResetPasswordAsync(usuario, token, NuevaPassword);
+                if (!passResult.Succeeded)
+                {
+                    TempData["Error"] = string.Join(", ", passResult.Errors.Select(e => e.Description));
+                    return View(usuario);
+                }
+            }
+            TempData["Mensaje"] = "Usuario actualizado correctamente.";
+            return RedirectToAction("Usuarios");
         }
     }
 }

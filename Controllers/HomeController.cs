@@ -50,19 +50,45 @@ public class HomeController : Controller
         }
         if (!string.IsNullOrEmpty(q))
         {
+            var qLower = q.ToLower();
             productos = productos.Where(p =>
-                (p.Nombre != null && p.Nombre.ToLower().Contains(q.ToLower())) ||
-                (p.Descripcion != null && p.Descripcion.ToLower().Contains(q.ToLower())) ||
-                (p.Genero != null && p.Genero.ToLower().Contains(q.ToLower())) ||
-                (p.Plataforma != null && p.Plataforma.ToLower().Contains(q.ToLower())) ||
-                (p.TipoProducto != null && p.TipoProducto.ToLower().Contains(q.ToLower())) ||
-                (p.ModoJuego != null && p.ModoJuego.ToLower().Contains(q.ToLower())) ||
-                (p.ClasificacionEdad != null && p.ClasificacionEdad.ToLower().Contains(q.ToLower())) ||
-                (p.CategoriasEspeciales != null && p.CategoriasEspeciales.ToLower().Contains(q.ToLower()))
+                (p.Nombre != null && p.Nombre.ToLower().Contains(qLower)) ||
+                (p.Descripcion != null && p.Descripcion.ToLower().Contains(qLower)) ||
+                (p.Genero != null && p.Genero.ToLower().Contains(qLower)) ||
+                (p.Plataforma != null && p.Plataforma.ToLower().Contains(qLower)) ||
+                (p.TipoProducto != null && p.TipoProducto.ToLower().Contains(qLower)) ||
+                (p.ModoJuego != null && p.ModoJuego.ToLower().Contains(qLower)) ||
+                (p.ClasificacionEdad != null && p.ClasificacionEdad.ToLower().Contains(qLower)) ||
+                (p.CategoriasEspeciales != null && p.CategoriasEspeciales.ToLower().Contains(qLower))
             );
             ViewData["Busqueda"] = q;
         }
-        return View(productos.ToList());
+        var lista = productos.ToList();
+        // Lógica de expiración de oferta
+        var ahora = DateTime.UtcNow;
+        foreach (var p in lista)
+        {
+            if (p.EsOferta && p.OfertaFin.HasValue && p.OfertaFin.Value < ahora)
+            {
+                p.EsOferta = false;
+                // Solo reasignar si PrecioReal es válido
+                if (p.PrecioReal.HasValue && p.PrecioReal.Value > 0)
+                {
+                    p.Precio = p.PrecioReal.Value;
+                }
+                // Si PrecioReal no es válido, mantener el precio actual (no poner a cero)
+            }
+            // Si el precio es cero o negativo, intentar corregir
+            if (p.Precio <= 0)
+            {
+                if (p.PrecioReal.HasValue && p.PrecioReal.Value > 0)
+                    p.Precio = p.PrecioReal.Value;
+                else if (p.Descuento.HasValue && p.Descuento.Value > 0 && p.PrecioReal.HasValue && p.PrecioReal.Value > 0)
+                    p.Precio = p.PrecioReal.Value - (p.PrecioReal.Value * p.Descuento.Value / 100);
+                // Si sigue sin ser válido, dejar el precio como está (no poner a cero)
+            }
+        }
+        return View(lista);
     }
 
     public IActionResult Login()
@@ -87,7 +113,7 @@ public class HomeController : Controller
         return View();
     }
 
-    public IActionResult Catalogo(string? genero, string? plataforma, string? tipo, string? modo, string? clasificacion, string? categoria, bool? novedades)
+    public IActionResult Catalogo(string? genero, string? plataforma, string? tipo, string? modo, string? clasificacion, string? categoria, string? q, bool? novedades)
     {
         var productos = _context.Productos.AsQueryable();
         if (!string.IsNullOrEmpty(genero))
@@ -128,6 +154,21 @@ public class HomeController : Controller
             productos = productos.Where(p => p.CategoriasEspeciales != null && p.CategoriasEspeciales.Contains(categoria));
             ViewData["FiltroCategoria"] = categoria;
         }
+        if (!string.IsNullOrEmpty(q))
+        {
+            var qLower = q.ToLower();
+            productos = productos.Where(p =>
+                (p.Nombre != null && p.Nombre.ToLower().Contains(qLower)) ||
+                (p.Descripcion != null && p.Descripcion.ToLower().Contains(qLower)) ||
+                (p.Genero != null && p.Genero.ToLower().Contains(qLower)) ||
+                (p.Plataforma != null && p.Plataforma.ToLower().Contains(qLower)) ||
+                (p.TipoProducto != null && p.TipoProducto.ToLower().Contains(qLower)) ||
+                (p.ModoJuego != null && p.ModoJuego.ToLower().Contains(qLower)) ||
+                (p.ClasificacionEdad != null && p.ClasificacionEdad.ToLower().Contains(qLower)) ||
+                (p.CategoriasEspeciales != null && p.CategoriasEspeciales.ToLower().Contains(qLower))
+            );
+            ViewData["Busqueda"] = q;
+        }
         if (novedades == true)
         {
             productos = productos.OrderByDescending(p => p.Id).Take(12);
@@ -137,7 +178,32 @@ public class HomeController : Controller
         {
             productos = productos.OrderByDescending(p => p.Id);
         }
-        return View(productos.ToList());
+        var lista = productos.ToList();
+        // Lógica de expiración de oferta
+        var ahora = DateTime.UtcNow;
+        foreach (var p in lista)
+        {
+            if (p.EsOferta && p.OfertaFin.HasValue && p.OfertaFin.Value < ahora)
+            {
+                p.EsOferta = false;
+                // Solo reasignar si PrecioReal es válido
+                if (p.PrecioReal.HasValue && p.PrecioReal.Value > 0)
+                {
+                    p.Precio = p.PrecioReal.Value;
+                }
+                // Si PrecioReal no es válido, mantener el precio actual (no poner a cero)
+            }
+            // Si el precio es cero o negativo, intentar corregir
+            if (p.Precio <= 0)
+            {
+                if (p.PrecioReal.HasValue && p.PrecioReal.Value > 0)
+                    p.Precio = p.PrecioReal.Value;
+                else if (p.Descuento.HasValue && p.Descuento.Value > 0 && p.PrecioReal.HasValue && p.PrecioReal.Value > 0)
+                    p.Precio = p.PrecioReal.Value - (p.PrecioReal.Value * p.Descuento.Value / 100);
+                // Si sigue sin ser válido, dejar el precio como está (no poner a cero)
+            }
+        }
+        return View(lista);
     }
 
     public IActionResult Producto(int id)
@@ -145,6 +211,13 @@ public class HomeController : Controller
         var producto = _context.Productos.FirstOrDefault(p => p.Id == id);
         if (producto == null)
             return NotFound();
+        // Lógica de expiración de oferta para producto individual
+        var ahora = DateTime.UtcNow;
+        if (producto.EsOferta && producto.OfertaFin.HasValue && producto.OfertaFin.Value < ahora)
+        {
+            producto.EsOferta = false;
+            producto.Precio = producto.PrecioReal ?? producto.Precio;
+        }
         // Cargar imágenes de galería ordenadas
         var imagenesGaleria = _context.ProductoImagenes
             .Where(i => i.ProductoId == id)
@@ -159,12 +232,22 @@ public class HomeController : Controller
     public IActionResult AddToCart(int id, int cantidad)
     {
         var usuarioId = HttpContext.Session.GetString("UsuarioId");
+        bool isAjax = Request.Headers["X-Requested-With"] == "XMLHttpRequest" ||
+                      (Request.Headers["Accept"].ToString().Contains("application/json"));
         if (string.IsNullOrEmpty(usuarioId))
         {
             // Guardar la URL de retorno para después del login
             var returnUrl = Url.Action("Producto", "Home", new { id }) ?? "/";
             HttpContext.Session.SetString("ReturnToAfterLogin", returnUrl);
-            return Json(new { success = false, loginRequired = true });
+            if (isAjax)
+            {
+                return Json(new { success = false, loginRequired = true });
+            }
+            else
+            {
+                TempData["Error"] = "Primero debes iniciar sesión como cliente para poder añadir productos al carrito.";
+                return Redirect($"/Account/Login?returnUrl={Uri.EscapeDataString(returnUrl)}");
+            }
         }
         var carrito = HttpContext.Session.GetObjectFromJson<Dictionary<int, int>>("Carrito") ?? new Dictionary<int, int>();
         if (carrito.ContainsKey(id))

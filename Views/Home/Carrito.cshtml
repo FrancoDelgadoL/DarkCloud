@@ -6,23 +6,23 @@
     <h2 class="text-center mb-4" style="color:#ffd600; font-weight:700; letter-spacing:1px;">Carrito de Compras</h2>
     <div id="carrito-lista" class="row g-4 justify-content-center"></div>
     <div class="text-center mt-4">
-        <a href="/Home/Catalogo" class="btn btn-secondary">Seguir comprando</a>
+        <a href="/Home/Catalogo" class="btn btn-secondary fw-bold shadow">Seguir comprando</a>
     </div>
 </div>
 <!-- Modal de confirmación para eliminar -->
 <div class="modal fade" id="modalConfirmarEliminar" tabindex="-1" aria-labelledby="modalConfirmarEliminarLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content bg-dark text-white">
+    <div class="modal-content bg-dark text-white rounded-4 border border-primary shadow-lg">
       <div class="modal-header border-0">
-        <h5 class="modal-title" id="modalConfirmarEliminarLabel">Quitar producto del carrito</h5>
+        <h5 class="modal-title fw-bold" id="modalConfirmarEliminarLabel" style="font-family:'Orbitron',sans-serif;">Quitar producto del carrito</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body text-center">
         ¿Realmente deseas quitar este producto del carrito?
       </div>
       <div class="modal-footer border-0 justify-content-center">
-        <button type="button" class="btn btn-danger" id="btn-confirmar-quitar">Sí, quitar</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, mantener</button>
+        <button type="button" class="btn btn-danger fw-bold shadow" id="btn-confirmar-quitar">Sí, quitar</button>
+        <button type="button" class="btn btn-secondary fw-bold shadow" data-bs-dismiss="modal">No, mantener</button>
       </div>
     </div>
   </div>
@@ -30,23 +30,23 @@
 
 <!-- Estilos específicos del carrito ahora están en site.css -->
 <style>
-/* Tarjeta personalizada para productos del carrito */
 .carrito-card-custom {
     min-height: 370px;
     max-width: 340px;
     margin-left: auto;
     margin-right: auto;
     border-radius: 18px;
-    border: 1.5px solid #23272b;
-    background: linear-gradient(135deg, #181a1b 80%, #23272b 100%);
-    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    border: 2px solid #7c4dff;
+    background: #fff;
+    box-shadow: 0 0 16px #7c4dff44, 0 4px 32px #0002;
     transition: box-shadow 0.2s, transform 0.2s;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    color: #181a1b;
 }
 .carrito-card-custom:hover {
-    box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+    box-shadow: 0 0 32px #18ffff99, 0 8px 32px #0004;
     transform: translateY(-4px) scale(1.01);
 }
 .carrito-img-producto {
@@ -57,6 +57,30 @@
     background: #23272b;
     box-shadow: 0 2px 8px rgba(0,0,0,0.10);
     padding: 8px;
+}
+.card-title {
+    color: #7c4dff;
+    font-family: 'Orbitron',sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+.fw-bold.fs-5, .fw-bold.fs-5.text-warning, .fw-bold.fs-5.text-info {
+    color: #18ffff !important;
+}
+.badge.bg-warning.text-dark {
+    background: linear-gradient(90deg,#ffd600,#fff176);
+    color: #181a1b !important;
+    font-weight: 700;
+    font-size: 1rem;
+}
+.btn-quitar {
+    min-width: 90px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+.modal-content.bg-dark.text-white {
+    border-radius: 16px;
+    border: 2px solid #7c4dff;
 }
 </style>
 <!-- Fin estilos carrito -->
@@ -75,6 +99,15 @@ function renderCarrito(productos) {
     }
     productos.forEach(prod => {
         totalCount += prod.cantidad || 1;
+        // Lógica de oferta expirable (solo frontend, depende de los datos guardados en localStorage)
+        let ahora = new Date();
+        let ofertaActiva = prod.esOferta && prod.descuento > 0 && prod.precioReal > 0 && prod.precio > 0 && prod.precio < prod.precioReal && prod.ofertaFin && new Date(prod.ofertaFin) > ahora;
+        let precioHtml = '';
+        if (ofertaActiva) {
+            precioHtml = `<span class='fw-bold fs-5 text-warning'>S/ ${prod.precio.toFixed(2)}</span> <span class='badge bg-danger ms-2'>-${parseInt(prod.descuento)}%</span><br><span class='text-muted'><s>S/ ${prod.precioReal.toFixed(2)}</s></span>`;
+        } else {
+            precioHtml = `<span class='fw-bold fs-5 text-info'>S/ ${prod.precio.toFixed(2)}</span>`;
+        }
         const card = document.createElement('div');
         card.className = 'col-12 col-md-6 col-lg-4 d-flex align-items-stretch';
         card.innerHTML = `
@@ -86,7 +119,7 @@ function renderCarrito(productos) {
                 <h5 class='card-title text-center mb-2'>${prod.nombre}</h5>
                 <p class='card-text text-center text-truncate mb-2' title='${prod.descripcion || ''}'>${prod.descripcion || ''}</p>
                 <div class='d-flex justify-content-between align-items-center mb-2'>
-                    <span class='fw-bold fs-5 text-info'>S/ ${prod.precio}</span>
+                    <div>${precioHtml}</div>
                     <span class='badge bg-warning text-dark fs-6'>x${prod.cantidad || 1}</span>
                 </div>
                 <div class='mt-auto d-flex justify-content-center gap-2'>

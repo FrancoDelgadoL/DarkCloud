@@ -33,6 +33,11 @@
 // })();
 
 window.updateCartBadge = function(count) {
+  // Si no se pasa count, calcularlo desde el carrito
+  if (typeof count === 'undefined') {
+    var carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    count = carrito.reduce((acc, p) => acc + (p.cantidad || 1), 0);
+  }
   sessionStorage.setItem('cartCount', count);
   var badge = document.getElementById('cart-count-badge');
   if (badge) {
@@ -44,14 +49,5 @@ window.updateCartBadge = function(count) {
 }
 // Sincronizar badge al cargar la página
 (function() {
-  var badge = document.getElementById('cart-count-badge');
-  // Leer la cantidad real de productos del carrito (sumar cantidades)
-  var carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-  var count = carrito.reduce((acc, p) => acc + (p.cantidad || 1), 0);
-  if (badge) {
-    badge.textContent = count;
-    badge.style.display = count > 0 ? '' : 'none';
-  }
-  // También sincroniza en sessionStorage para compatibilidad
-  sessionStorage.setItem('cartCount', count);
+  if(window.updateCartBadge) window.updateCartBadge();
 })();
