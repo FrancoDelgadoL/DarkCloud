@@ -43,6 +43,15 @@ function renderCarrito(productos) {
         return;
     }
     productos.forEach(prod => {
+        // Lógica de oferta expirable (solo frontend, depende de los datos guardados en localStorage)
+        let ahora = new Date();
+        let ofertaActiva = prod.esOferta && prod.descuento > 0 && prod.precioReal > 0 && prod.precio > 0 && prod.precio < prod.precioReal && prod.ofertaFin && new Date(prod.ofertaFin) > ahora;
+        let precioHtml = '';
+        if (ofertaActiva) {
+            precioHtml = `<span class='fw-bold fs-5 text-warning'>S/ ${prod.precio.toFixed(2)}</span> <span class='badge bg-danger ms-2'>-${parseInt(prod.descuento)}%</span><br><span class='text-muted'><s>S/ ${prod.precioReal.toFixed(2)}</s></span>`;
+        } else {
+            precioHtml = `<span class='fw-bold fs-5 text-info'>S/ ${prod.precio.toFixed(2)}</span>`;
+        }
         const card = document.createElement('div');
         card.className = 'col-md-6 col-lg-4 mb-4';
         card.innerHTML = `
@@ -51,7 +60,7 @@ function renderCarrito(productos) {
             <div class='card-body d-flex flex-column'>
                 <h5 class='card-title'>${prod.nombre}</h5>
                 <p class='card-text mb-2'>${prod.descripcion || ''}</p>
-                <p class='fw-bold fs-5 mb-2'>S/ ${prod.precio}</p>
+                <div class='mb-2'>${precioHtml}</div>
                 <div class='mt-auto d-flex gap-2 justify-content-between'>
                     <button class='btn btn-danger btn-quitar' data-id='${prod.id}'>Quitar</button>
                     <a href='/Home/Pagar?productoId=${prod.id}' class='btn btn-success'>Pagar</a>

@@ -3,8 +3,8 @@
     Layout = "../Shared/_Layout.cshtml";
 }
 <div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-    <div class="card shadow-lg p-4" style="background:#181a1b; min-width:340px; max-width:400px; width:100%; border-radius:18px; border:1px solid #333;">
-        <h2 class="text-center mb-4" style="color:#ffd600; font-weight:700; letter-spacing:1px;">Iniciar Sesión</h2>
+    <div class="card shadow-lg p-4 login-card-modern">
+        <h2 class="text-center mb-4 login-title">Iniciar Sesión</h2>
         @if (TempData["Error"] != null) {
             <div class="alert alert-danger d-flex align-items-center" role="alert" style="font-size:1.05rem;">
                 <i class="fas fa-exclamation-triangle me-2"></i>
@@ -14,22 +14,151 @@
         @if (TempData["Mensaje"] != null) {
             <div class="alert alert-success">@TempData["Mensaje"]</div>
         }
-        <form method="post" action="/Account/Login" autocomplete="on">
+        <div id="cuentas-guardadas" style="display:none;">
+            <h6 class="text-white-50 mb-2">Cuentas guardadas en este dispositivo:</h6>
+            <div id="cuentas-lista" class="mb-3"></div>
+            <button class="btn btn-outline-light btn-sm w-100 mb-2" id="btn-otra-cuenta">Iniciar sesión con otra cuenta</button>
+        </div>
+        <form id="login-form" method="post" action="/Account/Login" autocomplete="on">
             <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
             <div class="mb-3">
                 <div class="input-group">
                     <span class="input-group-text bg-dark text-secondary border-0"><i class="fas fa-envelope"></i></span>
-                    <input id="login-email" type="email" class="form-control bg-dark text-white border-0" name="email" placeholder="Correo Electrónico" required style="border:1px solid #444;" autocomplete="email">
+                    <input id="login-email" type="email" class="form-control bg-dark text-white border-0 login-input" name="email" placeholder="Correo Electrónico" required autocomplete="email">
                 </div>
             </div>
             <div class="mb-3">
                 <div class="input-group">
                     <span class="input-group-text bg-dark text-secondary border-0"><i class="fas fa-lock"></i></span>
-                    <input id="login-password" type="password" class="form-control bg-dark text-white border-0" name="password" placeholder="Contraseña" required style="border:1px solid #444;" autocomplete="current-password">
+                    <input id="login-password" type="password" class="form-control bg-dark text-white border-0 login-input" name="password" placeholder="Contraseña" required autocomplete="current-password">
                 </div>
             </div>
-            <button type="submit" class="btn btn-warning w-100 fw-bold">Iniciar Sesión</button>
+            <button type="submit" class="btn btn-primary w-100 fw-bold login-btn">Iniciar Sesión</button>
         </form>
-        <p class="text-center mt-3">¿No tienes una cuenta? <a href="/Account/Register" class="fw-bold" style="color:#18ffff;">Regístrate aquí</a></p>
+        <p class="text-center mt-3">
+            ¿No tienes una cuenta? <a href="/Account/Register" class="fw-bold login-link">Regístrate aquí</a>
+        </p>
     </div>
 </div>
+<style>
+.login-card-modern {
+  background: #181a1b;
+  min-width: 340px;
+  max-width: 400px;
+  width: 100%;
+  border-radius: 18px;
+  border: 1.5px solid #7c4dff;
+  box-shadow: 0 0 24px #00fff7a0, 0 2px 8px #7c4dff44;
+}
+.login-title {
+  color: #18ffff;
+  font-family: 'Orbitron',sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.login-input {
+  border: 1.5px solid #7c4dff;
+  border-radius: 10px;
+  background: #232526;
+  color: #fff;
+  font-size: 1.1rem;
+}
+.login-btn {
+  background: linear-gradient(90deg,#00fff7,#7c4dff);
+  color: #181a1b;
+  font-weight: 700;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 8px #7c4dff44;
+  border: none;
+}
+.login-btn:hover {
+  background: linear-gradient(90deg,#7c4dff,#00fff7);
+  color: #fff;
+}
+.login-link {
+  color: #18ffff;
+  text-decoration: underline;
+}
+.login-link:hover {
+  color: #7c4dff;
+}
+</style>
+@section Scripts {
+<script>
+// --- Cuentas guardadas en localStorage ---
+function mostrarCuentasGuardadas() {
+    const cuentas = JSON.parse(localStorage.getItem('cuentasGuardadas') || '[]');
+    const cont = document.getElementById('cuentas-guardadas');
+    const lista = document.getElementById('cuentas-lista');
+    if (cuentas.length > 0) {
+        cont.style.display = '';
+        lista.innerHTML = '';
+        cuentas.forEach(c => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-outline-warning w-100 mb-2 d-flex align-items-center justify-content-between';
+            btn.innerHTML = `<span><i class='fas fa-user-circle me-2'></i>${c.nombre || c.email}</span><span class='text-muted small'>${c.email}</span>`;
+            btn.onclick = function() {
+                document.getElementById('login-email').value = c.email;
+                document.getElementById('login-password').focus();
+                document.getElementById('login-form').style.display = '';
+                cont.style.display = 'none';
+                // Marcar que se usó login rápido
+                sessionStorage.setItem('loginRapido', '1');
+            };
+            lista.appendChild(btn);
+        });
+        document.getElementById('login-form').style.display = 'none';
+    } else {
+        cont.style.display = 'none';
+        document.getElementById('login-form').style.display = '';
+    }
+}
+document.getElementById('btn-otra-cuenta').onclick = function() {
+    document.getElementById('login-form').style.display = '';
+    document.getElementById('cuentas-guardadas').style.display = 'none';
+    sessionStorage.removeItem('loginRapido');
+};
+mostrarCuentasGuardadas();
+
+// --- Guardar cuenta tras login exitoso ---
+@if (TempData["NombreUsuario"] != null && TempData["EmailUsuario"] != null) {
+    <text>
+    sessionStorage.setItem('ultimoNombreLogin', '@TempData["NombreUsuario"]');
+    sessionStorage.setItem('ultimoEmailLogin', '@TempData["EmailUsuario"]');
+    </text>
+}
+if (window.location.search.includes('guardacuenta=1')) {
+    setTimeout(function() {
+        const email = sessionStorage.getItem('ultimoEmailLogin') || '';
+        const nombre = sessionStorage.getItem('ultimoNombreLogin') || '';
+        let cuentas = JSON.parse(localStorage.getItem('cuentasGuardadas') || '[]');
+        // Si la cuenta ya está guardada o se usó login rápido, no preguntar
+        if (cuentas.some(c => c.email === email) || sessionStorage.getItem('loginRapido') === '1') {
+            sessionStorage.removeItem('loginRapido');
+            window.location = '/'; // Redirigir al home o dashboard
+            return;
+        }
+        if (confirm('¿Deseas guardar esta cuenta para inicio rápido en este dispositivo?')) {
+            if (!cuentas.some(c => c.email === email)) {
+                cuentas.push({ email, nombre });
+                localStorage.setItem('cuentasGuardadas', JSON.stringify(cuentas));
+            }
+        }
+        sessionStorage.removeItem('ultimoEmailLogin');
+        sessionStorage.removeItem('ultimoNombreLogin');
+        window.location = '/'; // Redirigir al home o dashboard
+    }, 300);
+}
+// Guardar email/nombre al enviar login
+const loginForm = document.getElementById('login-form');
+if (loginForm) {
+    loginForm.addEventListener('submit', function() {
+        const email = document.getElementById('login-email').value;
+        sessionStorage.setItem('ultimoEmailLogin', email);
+        // El nombre se puede setear desde backend si se desea
+    });
+}
+</script>
+}

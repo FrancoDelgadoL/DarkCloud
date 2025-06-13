@@ -3,62 +3,46 @@
     ViewData["Title"] = "Panel de Administración";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-<div class="admin-panel d-flex">
-    <nav class="admin-sidebar bg-dark text-white p-4" style="min-width:220px; min-height:80vh;">
-        <h4 class="mb-4">Admin</h4>
-        <ul class="nav flex-column">
-            <li class="nav-item mb-2"><a class="nav-link text-white active" href="/Administrador">Dashboard</a></li>
-            <li class="nav-item mb-2"><a class="nav-link text-white" href="/Administrador/Productos">Productos</a></li>
-            <li class="nav-item mb-2"><a class="nav-link text-white" href="/Administrador/Usuarios">Usuarios</a></li>
-            <li class="nav-item mb-2"><a class="nav-link text-white" href="#">Pedidos</a></li>
-            <li class="nav-item mb-2"><a class="nav-link text-white" href="/Administrador/HomeHeroConfig">Config. Home</a></li>
-            <li class="nav-item mb-2"><a class="nav-link text-white" href="/">Volver a la tienda</a></li>
-        </ul>
-    </nav>
-    <main class="flex-fill p-4">
-        <h2>Bienvenido al Panel de Administración</h2>
-        <p>Desde aquí puedes gestionar productos, usuarios y pedidos de la tienda.</p>
-        <hr />
-        <h3>Productos disponibles</h3>
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <span></span>
-            <a href="/Administrador/AgregarProducto" class="btn btn-success">Agregar nuevo producto</a>
-        </div>
-        @if (!Model.Any())
-        {
-            <div class="alert alert-warning text-center">Aún no hay productos disponibles.</div>
-        }
-        else
-        {
-            <table class="table table-dark table-striped">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Precio</th>
-                        <th>Imagen</th>
-                    
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var producto in Model)
-                    {
-                        <tr>
-                            <td>@producto.Id</td>
-                            <td>@producto.Nombre</td>
-                            <td>S/ @producto.Precio</td>
-                            <td>
-                                @if (!string.IsNullOrEmpty(producto.ImagenUrl))
-                                {
-                                    <img src="@producto.ImagenUrl" alt="@producto.Nombre" style="max-width:80px; max-height:80px;" />
-                                }
-                            </td>
-                            
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-    </main>
+<h2>Bienvenido al Panel de Administración</h2>
+<p>Desde aquí puedes gestionar productos, usuarios y pedidos de la tienda.</p>
+<hr />
+<h3>Productos disponibles</h3>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <span></span>
+    <a href="/Administrador/AgregarProducto" class="btn btn-success">Agregar nuevo producto</a>
 </div>
+@if (!Model.Any())
+{
+    <div class="alert alert-warning text-center">Aún no hay productos disponibles.</div>
+}
+else
+{
+    <table class="table table-dark table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Imagen</th>
+            
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var producto in Model)
+            {
+                <tr>
+                    <td>@producto.Id</td>
+                    <td>@producto.Nombre</td>
+                    <td>S/ @producto.Precio</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(producto.ImagenUrl))
+                        {
+                            <img src="@producto.ImagenUrl" alt="@producto.Nombre" style="max-width:80px; max-height:80px;" />
+                        }
+                    </td>
+                    
+                </tr>
+            }
+        </tbody>
+    </table>
+}

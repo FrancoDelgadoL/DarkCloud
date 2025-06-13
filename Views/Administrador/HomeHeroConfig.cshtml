@@ -6,152 +6,138 @@
     var imagenes = Model?.ImagenesCarruselJson != null ? System.Text.Json.JsonSerializer.Deserialize<List<string>>(Model.ImagenesCarruselJson)! : new List<string>();
     var duracion = Model?.DuracionCarruselMs ?? 5000;
 }
-<div class="admin-panel d-flex">
-    <nav class="admin-sidebar bg-dark text-white p-4" style="min-width:220px; min-height:80vh;">
-        <h4 class="mb-4">Admin</h4>
-        <ul class="nav flex-column">
-            <li class="nav-item mb-2"><a class="nav-link text-white" href="/Administrador">Dashboard</a></li>
-            <li class="nav-item mb-2"><a class="nav-link text-white" href="/Administrador/Productos">Productos</a></li>
-            <li class="nav-item mb-2"><a class="nav-link text-white" href="/Administrador/Usuarios">Usuarios</a></li>
-            <li class="nav-item mb-2"><a class="nav-link text-white active" href="/Administrador/HomeHeroConfig">Config. Home</a></li>
-            <li class="nav-item mb-2"><a class="nav-link text-white" href="/">Volver a la tienda</a></li>
-        </ul>
-    </nav>
-    <main class="flex-fill p-4">
-        <h2 class="mb-4">Configurar sección principal del Home</h2>
-        @if (TempData["Mensaje"] != null) {
-            <div class="alert alert-success">@TempData["Mensaje"]</div>
-        }
-        <form asp-action="HomeHeroConfig" method="post" enctype="multipart/form-data" id="heroConfigForm">
-            <div class="mb-3">
-                <label class="form-label">Título principal</label>
-                <input type="text" name="Titulo" class="form-control" value="@Model?.Titulo" maxlength="100" />
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Frases del carrusel</label>
-                <div id="frases-list">
-                    @for (int i = 0; i < frases.Count; i++) {
-                        <div class="input-group mb-2 frase-item">
-                            <input type="text" name="Frases" class="form-control" value="@frases[i]" />
-                            <button type="button" class="btn btn-danger btn-remove-frase"><i class="fas fa-trash"></i></button>
-                        </div>
-                    }
+<h2 class="mb-4">Configurar sección principal del Home</h2>
+@if (TempData["Mensaje"] != null) {
+    <div class="alert alert-success">@TempData["Mensaje"]</div>
+}
+<form asp-action="HomeHeroConfig" method="post" enctype="multipart/form-data" id="heroConfigForm">
+    <div class="mb-3">
+        <label class="form-label">Título principal</label>
+        <input type="text" name="Titulo" class="form-control" value="@Model?.Titulo" maxlength="100" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Frases del carrusel</label>
+        <div id="frases-list">
+            @for (int i = 0; i < frases.Count; i++) {
+                <div class="input-group mb-2 frase-item">
+                    <input type="text" name="Frases" class="form-control" value="@frases[i]" />
+                    <button type="button" class="btn btn-danger btn-remove-frase"><i class="fas fa-trash"></i></button>
                 </div>
-                <button type="button" class="btn btn-secondary" id="add-frase"><i class="fas fa-plus"></i> Agregar frase</button>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Imágenes del carrusel</label>
-                <div id="imagenes-list">
-                    @for (int i = 0; i < imagenes.Count; i++) {
-                        <div class="mb-2 imagen-item d-flex align-items-center">
-                            <img src="@imagenes[i]" alt="img" style="max-width:100px;max-height:60px;object-fit:cover;margin-right:10px;">
-                            <input type="hidden" name="ImagenesExistentes" value="@imagenes[i]" />
-                            <button type="button" class="btn btn-danger btn-remove-imagen"><i class="fas fa-trash"></i></button>
-                        </div>
-                    }
-                </div>
-                <input type="file" name="ImagenesNuevas" id="input-imagenes" class="form-control mt-2" accept="image/*" multiple />
-                <div id="preview-nuevas" class="mt-2 d-flex flex-wrap"></div>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Duración del carrusel (segundos)</label>
-                <input type="number" name="DuracionCarruselSeg" class="form-control" value="@(Model?.DuracionCarruselMs > 0 ? Model.DuracionCarruselMs / 1000 : 5)" min="1" step="1" />
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Texto del botón</label>
-                <input type="text" name="TextoBoton" class="form-control" value="@Model?.TextoBoton" maxlength="100" />
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Enlace del botón</label>
-                <input type="text" name="EnlaceBoton" class="form-control" value="@Model?.EnlaceBoton" maxlength="200" />
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Mensaje del banner</label>
-                <input type="text" name="MensajeBanner" class="form-control" value="@Model?.MensajeBanner" maxlength="300" />
-            </div>
-            <button type="submit" class="btn btn-primary">Guardar cambios</button>
-        </form>
-        <hr />
-        <h4 class="mt-5">Vista previa</h4>
-        <div class="border rounded p-4 bg-dark text-white mb-4">
-            <header class="hero-section text-white py-5">
-              <div class="container d-flex align-items-center justify-content-between flex-wrap flex-md-nowrap" style="min-height: 50vh;">
-                <div class="hero-text text-start" style="flex:1; min-width:260px; max-width:500px;">
-                  <h1 class="display-4 fw-bold" id="preview-titulo">@Model?.Titulo </h1>
-                  <div id="hero-carousel-preview" class="carousel slide" data-bs-ride="carousel" data-bs-interval="@(Model?.DuracionCarruselMs > 0 ? Model.DuracionCarruselMs : 5000)">
-                    <div class="carousel-inner" id="preview-frases">
-                      @for (int i = 0; i < frases.Count; i++) {
-                        <div class="carousel-item @(i == 0 ? "active" : "")">
-                          <p class="lead">@frases[i]</p>
-                        </div>
-                      }
-                    </div>
-                  </div>
-                  <a href="@(Model?.EnlaceBoton ?? "#catalogo")" class="btn btn-primary btn-lg mt-3" id="preview-boton">@Model?.TextoBoton </a>
-                </div>
-                <div class="hero-bg-carousel" style="flex:1; min-width:260px; max-width:600px; height:350px; position:relative;" id="preview-imagenes">
-                  @for (int i = 0; i < imagenes.Count; i++) {
-                    <div class="bg-image @(i == 0 ? "active" : "")" style="background-image:url('@imagenes[i]');"></div>
-                  }
-                </div>
-              </div>
-            </header>
-            <div class="container mt-4">
-              <div class="alert alert-info text-center" role="alert" id="preview-banner">
-                @Model?.MensajeBanner 
-              </div>
-            </div>
+            }
         </div>
-        <script>
-        // Frases dinámicas
-        const frasesList = document.getElementById('frases-list');
-        document.getElementById('add-frase').onclick = function() {
-            const div = document.createElement('div');
-            div.className = 'input-group mb-2 frase-item';
-            div.innerHTML = `<input type='text' name='Frases' class='form-control' />
-                <button type='button' class='btn btn-danger btn-remove-frase'><i class='fas fa-trash'></i></button>`;
-            frasesList.appendChild(div);
-        };
-        frasesList.addEventListener('click', function(e) {
-            if (e.target.closest('.btn-remove-frase')) {
-                e.target.closest('.frase-item').remove();
+        <button type="button" class="btn btn-secondary" id="add-frase"><i class="fas fa-plus"></i> Agregar frase</button>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Imágenes del carrusel</label>
+        <div id="imagenes-list">
+            @for (int i = 0; i < imagenes.Count; i++) {
+                <div class="mb-2 imagen-item d-flex align-items-center">
+                    <img src="@imagenes[i]" alt="img" style="max-width:100px;max-height:60px;object-fit:cover;margin-right:10px;">
+                    <input type="hidden" name="ImagenesExistentes" value="@imagenes[i]" />
+                    <button type="button" class="btn btn-danger btn-remove-imagen"><i class="fas fa-trash"></i></button>
+                </div>
             }
-        });
-        // Imágenes dinámicas
-        const inputImagenes = document.getElementById('input-imagenes');
-        const previewNuevas = document.getElementById('preview-nuevas');
-        inputImagenes.onchange = function() {
-            previewNuevas.innerHTML = '';
-            for (const file of inputImagenes.files) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const div = document.createElement('div');
-                    div.className = 'me-2 mb-2';
-                    div.innerHTML = `<img src='${e.target.result}' style='max-width:100px;max-height:60px;object-fit:cover;'>`;
-                    previewNuevas.appendChild(div);
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-        document.getElementById('imagenes-list').addEventListener('click', function(e) {
-            if (e.target.closest('.btn-remove-imagen')) {
-                e.target.closest('.imagen-item').remove();
-            }
-        });
-        // Vista previa en vivo (solo para campos simples)
-        document.getElementById('heroConfigForm').addEventListener('input', function() {
-            document.getElementById('preview-titulo').innerText = this.Titulo.value;
-            document.getElementById('preview-boton').innerText = this.TextoBoton.value;
-            document.getElementById('preview-boton').href = this.EnlaceBoton.value;
-            document.getElementById('preview-banner').innerText = this.MensajeBanner.value;
-        });
-        setTimeout(function() {
-            var previewCarousel = document.getElementById('hero-carousel-preview');
-            if (previewCarousel) {
-              var interval = document.querySelector('input[name="DuracionCarruselSeg"]')?.value || 5;
-              var carousel = new bootstrap.Carousel(previewCarousel, { interval: interval * 1000 });
-            }
-        }, 500);
-        </script>
-    </main>
+        </div>
+        <input type="file" name="ImagenesNuevas" id="input-imagenes" class="form-control mt-2" accept="image/*" multiple />
+        <div id="preview-nuevas" class="mt-2 d-flex flex-wrap"></div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Duración del carrusel (segundos)</label>
+        <input type="number" name="DuracionCarruselSeg" class="form-control" value="@(Model?.DuracionCarruselMs > 0 ? Model.DuracionCarruselMs / 1000 : 5)" min="1" step="1" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Texto del botón</label>
+        <input type="text" name="TextoBoton" class="form-control" value="@Model?.TextoBoton" maxlength="100" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Enlace del botón</label>
+        <input type="text" name="EnlaceBoton" class="form-control" value="@Model?.EnlaceBoton" maxlength="200" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Mensaje del banner</label>
+        <input type="text" name="MensajeBanner" class="form-control" value="@Model?.MensajeBanner" maxlength="300" />
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+</form>
+<hr />
+<h4 class="mt-5">Vista previa</h4>
+<div class="border rounded p-4 bg-dark text-white mb-4">
+    <header class="hero-section text-white py-5">
+      <div class="container d-flex align-items-center justify-content-between flex-wrap flex-md-nowrap" style="min-height: 50vh;">
+        <div class="hero-text text-start" style="flex:1; min-width:260px; max-width:500px;">
+          <h1 class="display-4 fw-bold" id="preview-titulo">@Model?.Titulo </h1>
+          <div id="hero-carousel-preview" class="carousel slide" data-bs-ride="carousel" data-bs-interval="@(Model?.DuracionCarruselMs > 0 ? Model.DuracionCarruselMs : 5000)">
+            <div class="carousel-inner" id="preview-frases">
+              @for (int i = 0; i < frases.Count; i++) {
+                <div class="carousel-item @(i == 0 ? "active" : "")">
+                  <p class="lead">@frases[i]</p>
+                </div>
+              }
+            </div>
+          </div>
+          <a href="@(Model?.EnlaceBoton ?? "#catalogo")" class="btn btn-primary btn-lg mt-3" id="preview-boton">@Model?.TextoBoton </a>
+        </div>
+        <div class="hero-bg-carousel" style="flex:1; min-width:260px; max-width:600px; height:350px; position:relative;" id="preview-imagenes">
+          @for (int i = 0; i < imagenes.Count; i++) {
+            <div class="bg-image @(i == 0 ? "active" : "")" style="background-image:url('@imagenes[i]');"></div>
+          }
+        </div>
+      </div>
+    </header>
+    <div class="container mt-4">
+      <div class="alert alert-info text-center" role="alert" id="preview-banner">
+        @Model?.MensajeBanner 
+      </div>
+    </div>
 </div>
+<script>
+// Frases dinámicas
+const frasesList = document.getElementById('frases-list');
+document.getElementById('add-frase').onclick = function() {
+    const div = document.createElement('div');
+    div.className = 'input-group mb-2 frase-item';
+    div.innerHTML = `<input type='text' name='Frases' class='form-control' />
+        <button type='button' class='btn btn-danger btn-remove-frase'><i class='fas fa-trash'></i></button>`;
+    frasesList.appendChild(div);
+};
+frasesList.addEventListener('click', function(e) {
+    if (e.target.closest('.btn-remove-frase')) {
+        e.target.closest('.frase-item').remove();
+    }
+});
+// Imágenes dinámicas
+const inputImagenes = document.getElementById('input-imagenes');
+const previewNuevas = document.getElementById('preview-nuevas');
+inputImagenes.onchange = function() {
+    previewNuevas.innerHTML = '';
+    for (const file of inputImagenes.files) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const div = document.createElement('div');
+            div.className = 'me-2 mb-2';
+            div.innerHTML = `<img src='${e.target.result}' style='max-width:100px;max-height:60px;object-fit:cover;'>`;
+            previewNuevas.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+    }
+};
+document.getElementById('imagenes-list').addEventListener('click', function(e) {
+    if (e.target.closest('.btn-remove-imagen')) {
+        e.target.closest('.imagen-item').remove();
+    }
+});
+// Vista previa en vivo (solo para campos simples)
+document.getElementById('heroConfigForm').addEventListener('input', function() {
+    document.getElementById('preview-titulo').innerText = this.Titulo.value;
+    document.getElementById('preview-boton').innerText = this.TextoBoton.value;
+    document.getElementById('preview-boton').href = this.EnlaceBoton.value;
+    document.getElementById('preview-banner').innerText = this.MensajeBanner.value;
+});
+setTimeout(function() {
+    var previewCarousel = document.getElementById('hero-carousel-preview');
+    if (previewCarousel) {
+      var interval = document.querySelector('input[name="DuracionCarruselSeg"]')?.value || 5;
+      var carousel = new bootstrap.Carousel(previewCarousel, { interval: interval * 1000 });
+    }
+}, 500);
+</script>

@@ -3,13 +3,14 @@
     ViewData["Title"] = "Catálogo";
 }
 @using Microsoft.AspNetCore.Identity
+@using DarkCloud.Models
 @inject SignInManager<Usuario> SignInManager
 <div class="container-fluid mt-5">
   <div class="row">
     <!-- Sidebar de filtros -->
     <aside class="col-lg-3 mb-4">
-      <div class="card shadow-sm p-3 bg-dark text-white sticky-top" style="top:90px; border-radius:16px;">
-        <h4 class="mb-3"><i class="fas fa-filter me-2"></i>Filtrar</h4>
+      <div class="card shadow-sm p-4 bg-dark text-white" style="border-radius:18px; position:relative;">
+        <h4 class="mb-3 fw-bold" style="font-family:'Orbitron',sans-serif;"><i class="fas fa-filter me-2"></i>Filtrar</h4>
         <!-- Filtros agrupados -->
         <form method="get" action="/Home/Catalogo">
           @{
@@ -19,7 +20,16 @@
               var filtroModo = ViewData["FiltroModo"] as string;
               var filtroClasificacion = ViewData["FiltroClasificacion"] as string;
               var filtroCategoria = ViewData["FiltroCategoria"] as string;
+              var busqueda = ViewData["Busqueda"] as string;
           }
+          <!-- BUSCADOR EN SIDEBAR -->
+          <div class="mb-4">
+            <div class="input-group input-group-lg shadow rounded-4 overflow-hidden">
+              <input type="text" name="q" class="form-control border-primary bg-white text-dark" placeholder="Buscar productos..." value="@busqueda" aria-label="Buscar productos" style="font-size:1.1rem;">
+              <button class="btn btn-primary px-4" type="submit"><i class="fas fa-search"></i></button>
+            </div>
+          </div>
+          <!-- FIN BUSCADOR EN SIDEBAR -->
           <div class="mb-3">
             <label class="form-label fw-bold">Género</label>
             <select class="form-select bg-dark text-white" name="genero">
@@ -80,15 +90,15 @@
               @if (filtroCategoria == "Liquidación") { <option value="Liquidación" selected>Liquidación</option> } else { <option value="Liquidación">Liquidación</option> }
             </select>
           </div>
-          <button type="submit" class="btn btn-primary w-100 mb-2"><i class="fas fa-search me-1"></i>Filtrar</button>
-          <a href="/Home/Catalogo" class="btn btn-secondary w-100"><i class="fas fa-times me-1"></i>Quitar Filtros</a>
+          <button type="submit" class="btn btn-primary w-100 mb-2 fw-bold shadow"><i class="fas fa-search me-1"></i>Filtrar</button>
+          <a href="/Home/Catalogo" class="btn btn-secondary w-100 fw-bold shadow"><i class="fas fa-times me-1"></i>Quitar Filtros</a>
         </form>
       </div>
     </aside>
     <!-- Catálogo de productos -->
     <section class="col-lg-9">
-      <h2 class="mb-4 text-white">Catálogo de Productos</h2>
-      <div class="row">
+      <h2 class="mb-4 text-white text-center" style="font-family:'Orbitron',sans-serif; letter-spacing:1px;">Catálogo de Productos</h2>
+      <div class="row g-4">
         @if (!Model.Any())
         {
           <div class="col-12">
@@ -101,19 +111,32 @@
         {
           @foreach (var producto in Model)
           {
+            var ahora = DateTime.UtcNow;
+            bool ofertaActiva = producto.EsOferta && producto.Descuento.HasValue && producto.PrecioReal.HasValue && producto.PrecioReal > 0 && producto.Descuento > 0 && producto.Precio > 0 && producto.Precio < producto.PrecioReal && producto.OfertaFin.HasValue && producto.OfertaFin.Value > ahora;
             <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
-              <div class="card h-100 shadow-sm">
-                <img src="@producto.ImagenUrl" class="card-img-top" alt="@producto.Nombre">
-                <div class="card-body d-flex flex-column">
-                  <h5 class="card-title">@producto.Nombre</h5>
-                  <p class="card-text truncate-description">@producto.Descripcion</p>
-                  <a href="@Url.Action("Producto", "Home", new { id = producto.Id })" class="btn-leer-mas-link @(producto.Descripcion != null && producto.Descripcion.Length > 120 ? "d-inline" : "d-none")">Leer más</a>
-                  <p class="card-text fw-bold">S/ @producto.Precio</p>
-                  <a href="@Url.Action("Producto", "Home", new { id = producto.Id })" class="btn btn-primary mt-auto">
-                      Añadir al carrito
-                  </a>
+                <div class="card h-100 shadow-sm bg-white neon-card border-0 d-flex flex-column">
+                    <img src="@producto.ImagenUrl" class="card-img-top p-3" alt="@producto.Nombre" style="background:#181a1b; border-radius:18px 18px 0 0; min-height:180px; object-fit:contain;">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold" style="font-family:'Orbitron',sans-serif; color:#7c4dff;">@producto.Nombre</h5>
+                        <p class="card-text truncate-description text-dark">@producto.Descripcion</p>
+                        <a href="@Url.Action("Producto", "Home", new { id = producto.Id })" class="btn-leer-mas-link @(producto.Descripcion != null && producto.Descripcion.Length > 120 ? "d-inline" : "d-none")">Leer más</a>
+                        @if (ofertaActiva && producto.Descuento.HasValue && producto.PrecioReal.HasValue)
+                        {
+                            <p class="card-text fs-5 text-danger fw-bold mb-1">S/ @producto.Precio <span class="badge bg-danger ms-2">-@producto.Descuento.Value.ToString("0")%</span></p>
+                            <p class="card-text text-muted mb-2"><s>S/ @producto.PrecioReal.Value.ToString("0.00")</s></p>
+                        }
+                        else if (producto.Precio > 0)
+                        {
+                            <p class="card-text fs-5 fw-bold text-success mb-2">S/ @producto.Precio</p>
+                            @if (producto.EsOferta) { <span class="badge bg-danger ms-2">Oferta</span> }
+                        }
+                        else if (producto.PrecioReal.HasValue && producto.PrecioReal.Value > 0)
+                        {
+                            <p class="card-text fs-5 fw-bold text-success mb-2">S/ @producto.PrecioReal.Value.ToString("0.00")</p>
+                        }
+                        <a href="@Url.Action("Producto", "Home", new { id = producto.Id })" class="btn btn-outline-danger mt-auto fw-bold shadow">Añadir al carrito <i class="fas fa-cart-plus ms-2"></i></a>
+                    </div>
                 </div>
-              </div>
             </div>
           }
         }
@@ -122,6 +145,15 @@
   </div>
 </div>
 <style>
+.neon-card {
+  border-radius: 18px;
+  box-shadow: 0 0 16px #7c4dff44, 0 4px 32px #0002;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.neon-card:hover {
+  box-shadow: 0 0 32px #18ffff99, 0 8px 32px #0004;
+  transform: translateY(-6px) scale(1.03);
+}
 .btn-leer-mas-link {
   background: none;
   border: none;
@@ -133,4 +165,19 @@
   margin-top: 2px;
   margin-bottom: 0;
 }
+.truncate-description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  min-height: 3.8em;
+  max-height: 4.2em;
+  position: relative;
+}
+.card.shadow-sm.p-4.bg-dark.text-white {
+  position: static !important;
+}
 </style>
+<!-- El siguiente bloque de estilos debe ir en un archivo CSS externo, no en Razor -->

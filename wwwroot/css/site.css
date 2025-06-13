@@ -70,6 +70,9 @@ html {
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Quitar el blur para que las imágenes del carrusel se vean nítidas */
+  filter: none !important;
+  backdrop-filter: none !important;
 }
 .hero-bg-carousel .bg-image {
   position: absolute;
@@ -83,6 +86,8 @@ html {
   opacity: 0;
   transition: opacity 1s linear;
   will-change: opacity, filter, clip-path;
+  filter: none !important;
+  backdrop-filter: none !important;
 }
 .hero-bg-carousel .bg-image.active {
   opacity: 1;
@@ -405,4 +410,17 @@ body {
     .carrito-img-producto {
         max-height: 90px;
     }
+}
+@media (max-width: 991px) {
+  .navbar-nav {
+    gap: 0;
+  }
+  .navbar-nav .nav-item {
+    height: auto;
+  }
+  .navbar-nav .nav-link {
+    font-size: 1.05rem;
+    padding: 0.7em 1em;
+    border-radius: 10px;
+  }
 }
