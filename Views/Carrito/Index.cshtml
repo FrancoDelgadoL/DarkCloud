@@ -46,6 +46,11 @@ else
                         <span class="fs-4 fw-bold text-success">@Model.Detalles.Sum(x => (x.Producto?.Precio ?? 0) * x.Cantidad).ToString("C")</span>
                     </div>
                     <a href="/Home/Pagar" class="btn btn-success w-100 fw-bold mt-3" style="font-family:'Orbitron',sans-serif; font-size:1.2rem;"><i class="fas fa-credit-card me-2"></i>Proceder al pago</a>
+                    <form asp-controller="Pago" asp-action="IniciarPago" method="post">
+                        <button type="submit" class="btn btn-success w-100 fw-bold mt-3" style="font-family:'Orbitron',sans-serif; font-size:1.2rem;">
+                            <i class="fas fa-credit-card me-2"></i>Pagar con Mercado Pago
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
