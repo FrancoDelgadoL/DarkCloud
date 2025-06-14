@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text;
+using System.Security.Claims;
 
 namespace DarkCloud.Controllers
 {
@@ -23,7 +24,7 @@ namespace DarkCloud.Controllers
         public async Task<IActionResult> IniciarPago()
         {
             // Obtener usuario autenticado
-            var userId = User.Identity?.Name;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
                 return RedirectToAction("Login", "Account");
 
@@ -47,15 +48,23 @@ namespace DarkCloud.Controllers
                 unit_price = (decimal)(detalle.Producto?.Precio ?? 0)
             }).ToList();
 
+            // URLs absolutas manuales, sin Url.Action
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+            // PRUEBA: URL de éxito hardcodeada para descartar problemas de generación local
+            var successUrl = "https://www.google.com";
+            var failureUrl = baseUrl + "/Pago/Error";
+            var pendingUrl = baseUrl + "/Pago/Pendiente";
+
             var preferencia = new {
                 items = items,
                 back_urls = new {
-                    success = Url.Action("Exito", "Pago", null, Request.Scheme),
-                    failure = Url.Action("Error", "Pago", null, Request.Scheme),
-                    pending = Url.Action("Pendiente", "Pago", null, Request.Scheme)
+                    success = successUrl,
+                    failure = failureUrl,
+                    pending = pendingUrl
                 },
                 auto_return = "approved"
             };
+            TempData["Error"] = $"JSON enviado: {JsonSerializer.Serialize(preferencia)}";
 
             var json = JsonSerializer.Serialize(preferencia);
             using var http = new HttpClient();
@@ -64,7 +73,8 @@ namespace DarkCloud.Controllers
             var response = await http.PostAsync("https://api.mercadopago.com/checkout/preferences", content);
             if (!response.IsSuccessStatusCode)
             {
-                TempData["Error"] = "No se pudo iniciar el pago. Intenta nuevamente.";
+                var errorMsg = await response.Content.ReadAsStringAsync();
+                TempData["Error"] = $"No se pudo iniciar el pago. Detalle: {errorMsg}";
                 return RedirectToAction("Index", "Carrito");
             }
             using var respStream = await response.Content.ReadAsStreamAsync();
@@ -73,8 +83,11 @@ namespace DarkCloud.Controllers
             return Redirect(initPoint);
         }
 
+        [HttpGet]
         public IActionResult Exito() => View();
+        [HttpGet]
         public IActionResult Pendiente() => View();
+        [HttpGet]
         public IActionResult Error() => View();
     }
 }
