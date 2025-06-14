@@ -227,30 +227,7 @@ public class HomeController : Controller
                 // Si sigue sin ser válido, dejar el precio como está (no poner a cero)
             }
         }
-        // Cargar configuración y carrusel usando el ViewModel
-        var homeVm = new HomeViewModel();
-        homeVm.Productos = lista;
-        var config = _context.HomeHeroConfigs.Include(h => h.ImagenesCarrusel).OrderBy(h => h.Id).FirstOrDefault();
-        if (config != null)
-        {
-            homeVm.Titulo = config.Titulo;
-            if (!string.IsNullOrEmpty(config.FrasesJson))
-                homeVm.Frases = System.Text.Json.JsonSerializer.Deserialize<List<string>>(config.FrasesJson) ?? new List<string>();
-            homeVm.DuracionCarruselMs = config.DuracionCarruselMs;
-            homeVm.TextoBoton = config.TextoBoton;
-            homeVm.EnlaceBoton = config.EnlaceBoton;
-            homeVm.MensajeBanner = config.MensajeBanner;
-            if (config.ImagenesCarrusel != null && config.ImagenesCarrusel.Any())
-            {
-                homeVm.ImagenesCarruselBase64 = config.ImagenesCarrusel.OrderBy(i => i.Orden)
-                    .Select(i => $"data:{i.MimeType};base64,{System.Convert.ToBase64String(i.Imagen)}").ToList();
-            }
-            else if (!string.IsNullOrEmpty(config.ImagenesCarruselJson))
-            {
-                homeVm.ImagenesCarruselBase64 = System.Text.Json.JsonSerializer.Deserialize<List<string>>(config.ImagenesCarruselJson) ?? new List<string>();
-            }
-        }
-        return View(homeVm);
+        return View(lista);
     }
 
     public IActionResult Producto(int id)
