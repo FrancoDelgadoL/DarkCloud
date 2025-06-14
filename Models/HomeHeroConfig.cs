@@ -22,5 +22,7 @@ namespace DarkCloud.Models
         public string? EnlaceBoton { get; set; }
         [MaxLength(300)]
         public string? MensajeBanner { get; set; }
+
+        public virtual ICollection<HomeHeroImagen> ImagenesCarrusel { get; set; } = new List<HomeHeroImagen>();
     }
 }

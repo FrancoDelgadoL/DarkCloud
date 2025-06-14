@@ -228,7 +228,7 @@ namespace DarkCloud.Controllers
         [HttpGet]
         public IActionResult HomeHeroConfig()
         {
-            var config = _context.HomeHeroConfigs.FirstOrDefault() ?? new Models.HomeHeroConfig {
+            var config = _context.HomeHeroConfigs.Include(h => h.ImagenesCarrusel).FirstOrDefault() ?? new Models.HomeHeroConfig {
                 Titulo = "DARK CLOUD",
                 FrasesJson = System.Text.Json.JsonSerializer.Serialize(new List<string> {
                     "¡Bienvenido a tu mundo gamer! \"Explora, juega y domina\"",
@@ -236,16 +236,17 @@ namespace DarkCloud.Controllers
                     "\"Tu aventura gamer comienza aquí\"",
                     "\"Juega, explora y conquista\""
                 }),
-                ImagenesCarruselJson = System.Text.Json.JsonSerializer.Serialize(new List<string> {
-                    "/images/carru1.jpg",
-                    "/images/carru2.jpe",
-                    "/images/carru3.jpg"
-                }),
                 DuracionCarruselMs = 5000,
                 TextoBoton = "Explorar Catálogo",
                 EnlaceBoton = "#catalogo",
                 MensajeBanner = "ENVÍO GRATIS EN PRODUCTOS SUPERIORES A S/99 | ENVÍOS A TODO PERÚ"
             };
+            ViewBag.ImagenesCarrusel = config.ImagenesCarrusel
+                .OrderBy(i => i.Orden)
+                .Select(i => new {
+                    Id = i.Id,
+                    Base64 = $"data:{i.MimeType};base64,{Convert.ToBase64String(i.Imagen)}"
+                }).ToList();
             return View(config);
         }
 
@@ -262,28 +263,41 @@ namespace DarkCloud.Controllers
             // Frases
             var frasesList = Frases?.Where(f => !string.IsNullOrWhiteSpace(f)).ToList() ?? new List<string>();
             config.FrasesJson = System.Text.Json.JsonSerializer.Serialize(frasesList);
-            // Imágenes existentes
-            var imagenes = ImagenesExistentes?.ToList() ?? new List<string>();
+            // Imágenes existentes (IDs de imágenes que se mantienen)
+            var imagenesExistentesIds = ImagenesExistentes?.Select(idStr => int.TryParse(idStr, out var id) ? id : 0).Where(id => id > 0).ToList() ?? new List<int>();
+
+            // Eliminar imágenes que ya no están
+            var imagenesActuales = _context.HomeHeroImagenes.Where(i => i.HomeHeroConfigId == config.Id).ToList();
+            var imagenesAEliminar = imagenesActuales.Where(i => !imagenesExistentesIds.Contains(i.Id)).ToList();
+            if (imagenesAEliminar.Any())
+            {
+                _context.HomeHeroImagenes.RemoveRange(imagenesAEliminar);
+            }
+
             // Subida de nuevas imágenes
             if (ImagenesNuevas != null)
             {
+                int ordenBase = imagenesActuales.Count;
                 foreach (var img in ImagenesNuevas)
                 {
                     if (img != null && img.Length > 0)
                     {
-                        var nombreArchivo = Path.GetFileNameWithoutExtension(img.FileName);
-                        var extension = Path.GetExtension(img.FileName);
-                        var nombreUnico = $"carrusel_{Guid.NewGuid()}{extension}";
-                        var rutaGuardado = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", nombreUnico);
-                        using (var stream = new FileStream(rutaGuardado, FileMode.Create))
+                        using (var ms = new MemoryStream())
                         {
-                            img.CopyTo(stream);
+                            img.CopyTo(ms);
+                            var imagenBytes = ms.ToArray();
+                            var imagenCarrusel = new HomeHeroImagen
+                            {
+                                Imagen = imagenBytes,
+                                MimeType = img.ContentType,
+                                HomeHeroConfig = config,
+                                Orden = ordenBase++
+                            };
+                            _context.HomeHeroImagenes.Add(imagenCarrusel);
                         }
-                        imagenes.Add($"/images/{nombreUnico}");
                     }
                 }
             }
-            config.ImagenesCarruselJson = System.Text.Json.JsonSerializer.Serialize(imagenes);
             // Validar duración
             int duracionMs = (DuracionCarruselSeg.HasValue && DuracionCarruselSeg.Value > 0) ? DuracionCarruselSeg.Value * 1000 : 5000;
             config.DuracionCarruselMs = duracionMs;

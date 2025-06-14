@@ -3,7 +3,7 @@
     ViewData["Title"] = "Configurar Home";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var frases = Model?.FrasesJson != null ? System.Text.Json.JsonSerializer.Deserialize<List<string>>(Model.FrasesJson)! : new List<string>();
-    var imagenes = Model?.ImagenesCarruselJson != null ? System.Text.Json.JsonSerializer.Deserialize<List<string>>(Model.ImagenesCarruselJson)! : new List<string>();
+    var imagenesCarrusel = ViewBag.ImagenesCarrusel as IEnumerable<dynamic> ?? new List<dynamic>();
     var duracion = Model?.DuracionCarruselMs ?? 5000;
 }
 <h2 class="mb-4">Configurar sección principal del Home</h2>
@@ -30,10 +30,10 @@
     <div class="mb-3">
         <label class="form-label">Imágenes del carrusel</label>
         <div id="imagenes-list">
-            @for (int i = 0; i < imagenes.Count; i++) {
+            @foreach (var img in imagenesCarrusel) {
                 <div class="mb-2 imagen-item d-flex align-items-center">
-                    <img src="@imagenes[i]" alt="img" style="max-width:100px;max-height:60px;object-fit:cover;margin-right:10px;">
-                    <input type="hidden" name="ImagenesExistentes" value="@imagenes[i]" />
+                    <img src="@img.Base64" alt="img" style="max-width:100px;max-height:60px;object-fit:cover;margin-right:10px;">
+                    <input type="hidden" name="ImagenesExistentes" value="@img.Id" />
                     <button type="button" class="btn btn-danger btn-remove-imagen"><i class="fas fa-trash"></i></button>
                 </div>
             }
@@ -78,8 +78,8 @@
           <a href="@(Model?.EnlaceBoton ?? "#catalogo")" class="btn btn-primary btn-lg mt-3" id="preview-boton">@Model?.TextoBoton </a>
         </div>
         <div class="hero-bg-carousel" style="flex:1; min-width:260px; max-width:600px; height:350px; position:relative;" id="preview-imagenes">
-          @for (int i = 0; i < imagenes.Count; i++) {
-            <div class="bg-image @(i == 0 ? "active" : "")" style="background-image:url('@imagenes[i]');"></div>
+          @foreach (var img in imagenesCarrusel) {
+            <div class="bg-image" style="background-image:url('@img.Base64');"></div>
           }
         </div>
       </div>
