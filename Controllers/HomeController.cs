@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using DarkCloud.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DarkCloud.Controllers;
 
@@ -91,7 +92,7 @@ public class HomeController : Controller
         // Cargar configuración y carrusel usando el ViewModel
         var homeVm = new HomeViewModel();
         homeVm.Productos = lista;
-        var config = _context.HomeHeroConfigs.OrderBy(h => h.Id).FirstOrDefault();
+        var config = _context.HomeHeroConfigs.Include(h => h.ImagenesCarrusel).OrderBy(h => h.Id).FirstOrDefault();
         if (config != null)
         {
             homeVm.Titulo = config.Titulo;
@@ -229,7 +230,7 @@ public class HomeController : Controller
         // Cargar configuración y carrusel usando el ViewModel
         var homeVm = new HomeViewModel();
         homeVm.Productos = lista;
-        var config = _context.HomeHeroConfigs.OrderBy(h => h.Id).FirstOrDefault();
+        var config = _context.HomeHeroConfigs.Include(h => h.ImagenesCarrusel).OrderBy(h => h.Id).FirstOrDefault();
         if (config != null)
         {
             homeVm.Titulo = config.Titulo;
