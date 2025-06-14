@@ -4,11 +4,20 @@
 @inject SignInManager<Usuario> SignInManager
 @{
     ViewData["Title"] = Model.Nombre;
-    // Simulación de galería: solo una imagen, pero estructura lista para varias
+    // Galería: ahora puede tener varias imágenes (base64 o url)
     var imagenes = ViewBag.ImagenesGaleria as List<string>;
     if (imagenes == null || !imagenes.Any())
     {
-        imagenes = new List<string> { Model.ImagenUrl ?? "/images/no-image.png" };
+        if (Model.ImagenPrincipal != null && Model.ImagenPrincipalMimeType != null)
+        {
+            var base64 = Convert.ToBase64String(Model.ImagenPrincipal);
+            var mime = Model.ImagenPrincipalMimeType;
+            imagenes = new List<string> { $"data:{mime};base64,{base64}" };
+        }
+        else
+        {
+            imagenes = new List<string> { Model.ImagenUrl ?? "/images/no-image.png" };
+        }
     }
     var ahora = DateTime.UtcNow;
     bool ofertaActiva = Model.EsOferta && Model.Descuento.HasValue && Model.PrecioReal.HasValue && Model.PrecioReal > 0 && Model.Descuento > 0 && Model.Precio > 0 && Model.Precio < Model.PrecioReal && Model.OfertaFin.HasValue && Model.OfertaFin.Value > ahora;
@@ -23,7 +32,7 @@
                 </div>
                 <div class="d-flex justify-content-center gap-2">
                     @for (int i = 0; i < imagenes.Count; i++) {
-                        <img src="@imagenes[i]" class="img-thumbnail border-2" style="width: 60px; height: 60px; object-fit: cover; cursor:pointer; background: #f5f5f5; border:2px solid #2196f3;" onclick="document.getElementById('main-image').src='@imagenes[i]'">
+                        <img src="@imagenes[i]" class="img-thumbnail border-2 galeria-miniatura" style="width: 60px; height: 60px; object-fit: cover; background: #f5f5f5; border:2px solid #2196f3;" onclick="document.getElementById('main-image').src='@imagenes[i]'">
                     }
                 </div>
             </div>
@@ -60,7 +69,8 @@
                         </tbody>
                     </table>
                 </div>
-                <form id="form-add-cart" method="post" action="/Home/AddToCart" class="mb-0">
+                <form id="form-add-cart" method="post" action="/Carrito/AddToCart" class="mb-0">
+                    <input type="hidden" name="productoId" value="@Model.Id" />
                     <div class="mb-4 d-flex align-items-center justify-content-center gap-3">
                         <label for="cantidad" class="form-label mb-0 fw-bold text-primary">Cantidad</label>
                         <div class="input-group flex-nowrap" style="width: 140px;">
@@ -88,19 +98,76 @@
   box-shadow: 0 0 32px #18ffff99, 0 8px 32px #0004;
   transform: translateY(-6px) scale(1.03);
 }
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+.galeria-miniatura {
+  border: 2px solid #2196f3;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border 0.2s, box-shadow 0.2s;
+  box-shadow: 0 0 8px #7c4dff33;
 }
-input[type=number] {
-  -moz-appearance: textfield;
+.galeria-miniatura.active, .galeria-miniatura:hover {
+  border: 2.5px solid #00fff7;
+  box-shadow: 0 0 16px #00fff799;
 }
-#main-image:hover {
-  box-shadow: 0 0 0 4px #18ffff, 0 4px 32px rgba(0,0,0,0.25);
+#main-image {
+  transition: box-shadow 0.2s, transform 0.2s;
   cursor: zoom-in;
 }
+#main-image.zoomed {
+  transform: scale(1.2);
+  box-shadow: 0 0 32px #00fff799;
+  z-index: 2001;
+}
+#lightbox-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(10,10,20,0.92);
+  z-index: 3000;
+  align-items: center;
+  justify-content: center;
+}
+#lightbox-overlay.active {
+  display: flex;
+}
+#lightbox-img {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 18px;
+  box-shadow: 0 0 32px #00fff799, 0 8px 32px #7c4dff99;
+}
 </style>
+<div id="lightbox-overlay" onclick="this.classList.remove('active')">
+  <img id="lightbox-img" src="" alt="Imagen ampliada" />
+</div>
+<script>
+(function() {
+  const mainImg = document.getElementById('main-image');
+  const miniaturas = document.querySelectorAll('.galeria-miniatura');
+  const lightbox = document.getElementById('lightbox-overlay');
+  const lightboxImg = document.getElementById('lightbox-img');
+  let activeIdx = 0;
+  if (miniaturas.length) {
+    miniaturas[0].classList.add('active');
+    miniaturas.forEach((thumb, idx) => {
+      thumb.addEventListener('click', function() {
+        mainImg.src = thumb.src;
+        miniaturas.forEach(t => t.classList.remove('active'));
+        thumb.classList.add('active');
+        activeIdx = idx;
+      });
+    });
+  }
+  mainImg.addEventListener('click', function() {
+    lightbox.classList.add('active');
+    lightboxImg.src = mainImg.src;
+  });
+  lightbox.addEventListener('click', function() {
+    lightbox.classList.remove('active');
+    lightboxImg.src = '';
+  });
+})();
+</script>
 
 @section Scripts {
 <script>
@@ -163,61 +230,17 @@ input[type=number] {
         return;
       }
       if (json.success) {
-        var carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-        var prodId = @Model.Id;
-        var prodNombre = "@Model.Nombre?.Replace("\"", "")";
-        var prodDescripcion = "@Model.Descripcion?.Replace("\"", "")";
-        var prodImagen = "@Model.ImagenUrl";
-        var prodPrecio = @Model.Precio;
-        var prodPrecioReal = '@(Model.PrecioReal?.ToString() ?? "null")';
-        var prodDescuento = '@(Model.Descuento?.ToString() ?? "null")';
-        var prodEsOferta = @Model.EsOferta.ToString().ToLower();
-        var prodOfertaFin = '@(Model.OfertaFin?.ToString("o") ?? "")';
-        var cantidad = parseInt(document.getElementById('cantidad').value) || 1;
-        var existe = carrito.find(function(p) { return p.id === prodId; });
-        if (existe) {
-          existe.cantidad += cantidad;
-          existe.tiempoAgregado = Date.now();
-        } else {
-          carrito.push({
-            id: prodId,
-            nombre: prodNombre,
-            descripcion: prodDescripcion,
-            imagenUrl: prodImagen,
-            precio: prodPrecio,
-            precioReal: prodPrecioReal !== "null" ? parseFloat(prodPrecioReal) : null,
-            descuento: prodDescuento !== "null" ? parseFloat(prodDescuento) : null,
-            esOferta: prodEsOferta === 'true',
-            ofertaFin: prodOfertaFin,
-            cantidad: cantidad,
-            tiempoAgregado: Date.now()
-          });
-        }
-        localStorage.setItem('carrito', JSON.stringify(carrito));
-        var total = carrito.reduce(function(acc, p) { return acc + (p.cantidad || 1); }, 0);
-        if(window.updateCartBadge) window.updateCartBadge(total);
         feedbackOverlay.style.display = 'flex';
         feedbackOverlay.innerHTML = "<div class='bg-dark text-white p-4 rounded-4 shadow-lg text-center fade show' style='font-size:1.1rem; min-width:320px; max-width:90vw;'>" +
           "<i class='fas fa-check-circle fa-2x mb-2 text-success'></i><br>Tu producto se ha añadido al carrito de compras." +
           "<div class='d-flex gap-3 justify-content-center mt-4'>" +
-            "<a href='/Home/Carrito' class='btn btn-primary btn-lg fw-bold shadow'>Ir a pagar</a>" +
+            "<a href='/Carrito' class='btn btn-primary btn-lg fw-bold shadow'>Ir a pagar</a>" +
             "<button id='seguir-viendo' class='btn btn-outline-light btn-lg fw-bold shadow'>Seguir viendo productos</button>" +
           "</div>" +
         "</div>";
         document.getElementById('seguir-viendo').onclick = function() {
-          feedbackOverlay.innerHTML = "<div class='bg-warning text-dark p-4 rounded-4 shadow-lg text-center fade show' style='font-size:1.05rem; min-width:320px; max-width:90vw;'>" +
-            "<i class='fas fa-clock fa-lg mb-2 text-warning'></i><br>Tienes 1 minuto para pagar, si no, automáticamente se borrará el producto de tu carrito de compras.<br><button class='btn btn-outline-secondary mt-3' id='aceptar-tiempo'>Aceptar</button></div>";
-          document.getElementById('aceptar-tiempo').onclick = function() { feedbackOverlay.style.display = 'none'; feedbackOverlay.innerHTML = ''; };
-          setTimeout(function() {
-            var carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-            var idx = carrito.findIndex(function(p) { return p.id === prodId; });
-            if(idx !== -1) {
-              carrito.splice(idx, 1);
-              localStorage.setItem('carrito', JSON.stringify(carrito));
-              var total = carrito.reduce(function(acc, p) { return acc + (p.cantidad || 1); }, 0);
-              if(window.updateCartBadge) window.updateCartBadge(total);
-            }
-          }, 60000);
+          feedbackOverlay.style.display = 'none';
+          feedbackOverlay.innerHTML = '';
         };
         feedbackOverlay.onclick = function(ev) {
           if(ev.target === feedbackOverlay) { feedbackOverlay.style.display = 'none'; feedbackOverlay.innerHTML = ''; }

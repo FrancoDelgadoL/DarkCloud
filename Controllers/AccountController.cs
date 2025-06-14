@@ -61,6 +61,16 @@ namespace DarkCloud.Controllers
             var result = await _userManager.CreateAsync(usuario, password);
             if (result.Succeeded)
             {
+                // Asegurar que el rol "Cliente" existe en Identity
+                if (!await _userManager.IsInRoleAsync(usuario, "Cliente"))
+                {
+                    var roleManager = HttpContext.RequestServices.GetService(typeof(RoleManager<IdentityRole>)) as RoleManager<IdentityRole>;
+                    if (roleManager != null && !await roleManager.RoleExistsAsync("Cliente"))
+                    {
+                        await roleManager.CreateAsync(new IdentityRole("Cliente"));
+                    }
+                    await _userManager.AddToRoleAsync(usuario, "Cliente");
+                }
                 TempData["Mensaje"] = "Cuenta creada correctamente. Inicia sesión.";
                 return RedirectToAction("Login");
             }

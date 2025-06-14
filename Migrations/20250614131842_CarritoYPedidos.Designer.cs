@@ -3,6 +3,7 @@ using System;
 using DarkCloud.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DarkCloud.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250614131842_CarritoYPedidos")]
+    partial class CarritoYPedidos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -201,12 +204,6 @@ namespace DarkCloud.Migrations
                     b.Property<string>("Genero")
                         .HasColumnType("text");
 
-                    b.Property<byte[]>("ImagenPrincipal")
-                        .HasColumnType("bytea");
-
-                    b.Property<string>("ImagenPrincipalMimeType")
-                        .HasColumnType("text");
-
                     b.Property<string>("ImagenUrl")
                         .HasColumnType("text");
 
@@ -246,12 +243,6 @@ namespace DarkCloud.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<byte[]>("ImagenData")
-                        .HasColumnType("bytea");
-
-                    b.Property<string>("ImagenMimeType")
-                        .HasColumnType("text");
 
                     b.Property<int>("Orden")
                         .HasColumnType("integer");
@@ -432,10 +423,12 @@ namespace DarkCloud.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("text");
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("text");
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("text");
@@ -472,10 +465,12 @@ namespace DarkCloud.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("text");
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("text");
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("Value")
                         .HasColumnType("text");

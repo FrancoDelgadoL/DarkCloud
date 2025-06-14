@@ -143,9 +143,19 @@
 </head>
 <body>
     <!-- Navbar DarkCloud con iconos -->
+    @using Microsoft.AspNetCore.Identity
+    @inject SignInManager<Usuario> SignInManager
+    @inject UserManager<Usuario> UserManager
+
     @{
-        var usuarioNombre = Context.Session.GetString("UsuarioNombre");
-        var usuarioRol = Context.Session.GetString("UsuarioRol");
+        string? usuarioNombre = null;
+        string? usuarioRol = null;
+        if (User.Identity != null && User.Identity.IsAuthenticated)
+        {
+            var usuario = await UserManager.GetUserAsync(User);
+            usuarioNombre = usuario?.Nombre ?? User.Identity.Name;
+            usuarioRol = usuario?.Rol;
+        }
     }
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow">
       <div class="container-fluid">
@@ -160,7 +170,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
-            @if (string.IsNullOrEmpty(usuarioRol)) {
+            @if (User.Identity == null || !User.Identity.IsAuthenticated) {
               <li class="nav-item">
                 <a class="nav-link text-white" href="/">
                   <i class="fas fa-home me-1"></i> Inicio
@@ -261,7 +271,7 @@
                 </ul>
               </li>
               <li class="nav-item">
-                <a class="nav-link text-white position-relative" href="/Home/Carrito">
+                <a class="nav-link text-white position-relative" href="/Carrito">
                   <i class="fas fa-shopping-cart me-1"></i> Carrito
                   <span id="cart-count-badge" class="badge bg-danger ms-1" style="display:none;position:absolute;top:2px;right:-10px;">0</span>
                 </a>
@@ -371,7 +381,11 @@
       // Mostrar el badge del carrito con la suma real de cantidades desde localStorage
       (function() {
         try {
-          let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+          let email = (window.getEmailActivo && typeof window.getEmailActivo === 'function') ? window.getEmailActivo() : (sessionStorage.getItem('ultimoEmailLogin') || localStorage.getItem('emailActivo') || '');
+          let carrito = [];
+          if(email) {
+            carrito = JSON.parse(localStorage.getItem('carrito_' + email)) || [];
+          }
           let count = carrito.reduce((acc, p) => acc + (p.cantidad || 1), 0);
           const badge = document.getElementById('cart-count-badge');
           if (badge) {

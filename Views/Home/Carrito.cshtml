@@ -139,11 +139,18 @@ function renderCarrito(productos) {
     });
 }
 function getCarrito() {
-    let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    let email = getEmailActivo();
+    let carrito = [];
+    if(email) {
+        carrito = JSON.parse(localStorage.getItem('carrito_' + email)) || [];
+    }
     return carrito;
 }
 function setCarrito(carrito) {
-    localStorage.setItem('carrito', JSON.stringify(carrito));
+    let email = getEmailActivo();
+    if(email) {
+        localStorage.setItem('carrito_' + email, JSON.stringify(carrito));
+    }
 }
 const btnConfirmarQuitar = document.getElementById('btn-confirmar-quitar');
 btnConfirmarQuitar.onclick = function() {
