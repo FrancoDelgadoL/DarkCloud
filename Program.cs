@@ -83,6 +83,10 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+// Agregar servicios de Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -107,6 +111,10 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
+// Habilitar Swagger en todos los entornos (puedes limitarlo a desarrollo si prefieres)
+app.UseSwagger();
+app.UseSwaggerUI();
 
 // Aplicar migraciones automáticamente al iniciar
 using (var scope = app.Services.CreateScope())
