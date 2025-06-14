@@ -94,20 +94,37 @@ function mostrarCuentasGuardadas() {
     if (cuentas.length > 0) {
         cont.style.display = '';
         lista.innerHTML = '';
-        cuentas.forEach(c => {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'btn btn-outline-warning w-100 mb-2 d-flex align-items-center justify-content-between';
-            btn.innerHTML = `<span><i class='fas fa-user-circle me-2'></i>${c.nombre || c.email}</span><span class='text-muted small'>${c.email}</span>`;
-            btn.onclick = function() {
+        cuentas.forEach((c, idx) => {
+            const div = document.createElement('div');
+            div.className = 'd-flex align-items-center mb-2';
+            div.style.gap = '8px';
+            const btnCuenta = document.createElement('button');
+            btnCuenta.type = 'button';
+            btnCuenta.className = 'btn btn-outline-warning flex-grow-1 d-flex align-items-center justify-content-between';
+            btnCuenta.innerHTML = `<span><i class='fas fa-user-circle me-2'></i>${c.nombre || c.email}</span><span class='text-muted small'>${c.email}</span>`;
+            btnCuenta.onclick = function() {
                 document.getElementById('login-email').value = c.email;
                 document.getElementById('login-password').focus();
                 document.getElementById('login-form').style.display = '';
                 cont.style.display = 'none';
-                // Marcar que se usó login rápido
                 sessionStorage.setItem('loginRapido', '1');
             };
-            lista.appendChild(btn);
+            const btnOlvidar = document.createElement('button');
+            btnOlvidar.type = 'button';
+            btnOlvidar.className = 'btn btn-outline-danger btn-sm ms-2';
+            btnOlvidar.innerHTML = '<i class="fas fa-trash-alt"></i>';
+            btnOlvidar.title = 'Olvidar';
+            btnOlvidar.onclick = function(e) {
+                e.stopPropagation();
+                if (confirm('¿Olvidar esta cuenta?')) {
+                    cuentas.splice(idx, 1);
+                    localStorage.setItem('cuentasGuardadas', JSON.stringify(cuentas));
+                    mostrarCuentasGuardadas();
+                }
+            };
+            div.appendChild(btnCuenta);
+            div.appendChild(btnOlvidar);
+            lista.appendChild(div);
         });
         document.getElementById('login-form').style.display = 'none';
     } else {
@@ -151,13 +168,23 @@ if (window.location.search.includes('guardacuenta=1')) {
         window.location = '/'; // Redirigir al home o dashboard
     }, 300);
 }
-// Guardar email/nombre al enviar login
+// --- Utilidades para carrito por usuario ---
+function getEmailActivo() {
+    // Intenta obtener el email del usuario logueado desde sessionStorage o localStorage
+    return sessionStorage.getItem('ultimoEmailLogin') || localStorage.getItem('emailActivo') || '';
+}
+function setEmailActivo(email) {
+    if(email) {
+        sessionStorage.setItem('ultimoEmailLogin', email);
+        localStorage.setItem('emailActivo', email);
+    }
+}
+// Llamar esto al iniciar sesión exitosamente
 const loginForm = document.getElementById('login-form');
 if (loginForm) {
     loginForm.addEventListener('submit', function() {
         const email = document.getElementById('login-email').value;
-        sessionStorage.setItem('ultimoEmailLogin', email);
-        // El nombre se puede setear desde backend si se desea
+        setEmailActivo(email);
     });
 }
 </script>

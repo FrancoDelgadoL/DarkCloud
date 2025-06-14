@@ -218,11 +218,14 @@ public class HomeController : Controller
             producto.EsOferta = false;
             producto.Precio = producto.PrecioReal ?? producto.Precio;
         }
-        // Cargar imágenes de galería ordenadas
+        // Cargar imágenes de galería ordenadas (base64 si existe, url si no)
         var imagenesGaleria = _context.ProductoImagenes
             .Where(i => i.ProductoId == id)
             .OrderBy(i => i.Orden)
-            .Select(i => i.Url)
+            .ToList()
+            .Select(i => i.ImagenData != null && i.ImagenMimeType != null
+                ? $"data:{i.ImagenMimeType};base64,{Convert.ToBase64String(i.ImagenData)}"
+                : i.Url)
             .ToList();
         ViewBag.ImagenesGaleria = (object)imagenesGaleria;
         return View(producto);

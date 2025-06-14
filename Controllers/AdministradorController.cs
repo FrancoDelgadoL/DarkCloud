@@ -42,29 +42,20 @@ namespace DarkCloud.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AgregarProducto(Producto producto, IFormFile ImagenArchivo, List<IFormFile> GaleriaArchivos)
         {
-            // Asegurar que la carpeta wwwroot/images existe
-            var imagesPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
-            if (!Directory.Exists(imagesPath))
-            {
-                Directory.CreateDirectory(imagesPath);
-            }
             // Procesar categorías especiales (multiselección)
             if (Request.Form["CategoriasEspeciales"].Count > 0)
             {
                 producto.CategoriasEspeciales = string.Join(", ", Request.Form["CategoriasEspeciales"].ToArray());
             }
+            // Guardar imagen principal en la base de datos
             if (ImagenArchivo != null && ImagenArchivo.Length > 0)
             {
-                var nombreArchivo = Path.GetFileNameWithoutExtension(ImagenArchivo.FileName);
-                var extension = Path.GetExtension(ImagenArchivo.FileName);
-                var nombreUnico = $"{nombreArchivo}_{Guid.NewGuid()}{extension}";
-                var rutaGuardado = Path.Combine(imagesPath, nombreUnico);
-                using (var stream = new FileStream(rutaGuardado, FileMode.Create))
+                using (var ms = new MemoryStream())
                 {
-                    ImagenArchivo.CopyTo(stream);
+                    ImagenArchivo.CopyTo(ms);
+                    producto.ImagenPrincipal = ms.ToArray();
+                    producto.ImagenPrincipalMimeType = ImagenArchivo.ContentType;
                 }
-                // Guardar la URL codificada para el navegador
-                producto.ImagenUrl = $"/images/{nombreUnico.Replace(" ", "%20")}";
             }
             // Procesar duración de la oferta
             if (producto.EsOferta && int.TryParse(Request.Form["DuracionOfertaHoras"], out int duracionHoras))
@@ -86,7 +77,6 @@ namespace DarkCloud.Controllers
             }
             else
             {
-                // Si no es oferta, el precio es igual al precio real
                 producto.Precio = producto.PrecioReal ?? 0;
                 producto.Descuento = null;
             }
@@ -102,21 +92,18 @@ namespace DarkCloud.Controllers
                     {
                         if (archivo != null && archivo.Length > 0)
                         {
-                            var nombreArchivo = Path.GetFileNameWithoutExtension(archivo.FileName);
-                            var extension = Path.GetExtension(archivo.FileName);
-                            var nombreUnico = $"galeria_{Guid.NewGuid()}{extension}";
-                            var rutaGuardado = Path.Combine(imagesPath, nombreUnico);
-                            using (var stream = new FileStream(rutaGuardado, FileMode.Create))
+                            using (var ms = new MemoryStream())
                             {
-                                archivo.CopyTo(stream);
+                                archivo.CopyTo(ms);
+                                var img = new ProductoImagen
+                                {
+                                    ProductoId = producto.Id,
+                                    ImagenData = ms.ToArray(),
+                                    ImagenMimeType = archivo.ContentType,
+                                    Orden = orden++
+                                };
+                                _context.ProductoImagenes.Add(img);
                             }
-                            var img = new ProductoImagen
-                            {
-                                ProductoId = producto.Id,
-                                Url = $"/images/{nombreUnico.Replace(" ", "%20")}",
-                                Orden = orden++
-                            };
-                            _context.ProductoImagenes.Add(img);
                         }
                     }
                     _context.SaveChanges();
@@ -141,16 +128,8 @@ namespace DarkCloud.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult EditarProducto(Producto producto, IFormFile ImagenArchivo, List<IFormFile> GaleriaArchivos, int[] EliminarGaleriaIds)
         {
-            // Asegurar que la carpeta wwwroot/images existe
-            var imagesPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
-            if (!Directory.Exists(imagesPath))
-            {
-                Directory.CreateDirectory(imagesPath);
-            }
-
             var productoDb = _context.Productos.FirstOrDefault(p => p.Id == producto.Id);
             if (productoDb == null) return NotFound();
-
             // Actualizar campos
             productoDb.Nombre = producto.Nombre;
             productoDb.Descripcion = producto.Descripcion;
@@ -164,28 +143,24 @@ namespace DarkCloud.Controllers
             productoDb.ModoJuego = producto.ModoJuego;
             productoDb.ClasificacionEdad = producto.ClasificacionEdad;
             productoDb.CategoriasEspeciales = string.Join(", ", Request.Form["CategoriasEspeciales"].ToArray());
-
+            // Guardar imagen principal en la base de datos
             if (ImagenArchivo != null && ImagenArchivo.Length > 0)
             {
-                var nombreArchivo = Path.GetFileNameWithoutExtension(ImagenArchivo.FileName);
-                var extension = Path.GetExtension(ImagenArchivo.FileName);
-                var nombreUnico = $"{nombreArchivo}_{Guid.NewGuid()}{extension}";
-                var rutaGuardado = Path.Combine(imagesPath, nombreUnico);
-                using (var stream = new FileStream(rutaGuardado, FileMode.Create))
+                using (var ms = new MemoryStream())
                 {
-                    ImagenArchivo.CopyTo(stream);
+                    ImagenArchivo.CopyTo(ms);
+                    productoDb.ImagenPrincipal = ms.ToArray();
+                    productoDb.ImagenPrincipalMimeType = ImagenArchivo.ContentType;
                 }
-                productoDb.ImagenUrl = $"/images/{nombreUnico.Replace(" ", "%20")}";
             }
 
-            // Eliminar imágenes de galería marcadas
+            // Eliminar imágenes de galería marcadas para eliminar
             if (EliminarGaleriaIds != null && EliminarGaleriaIds.Length > 0)
             {
-                var imagenesEliminar = _context.ProductoImagenes.Where(i => EliminarGaleriaIds.Contains(i.Id) && i.ProductoId == productoDb.Id).ToList();
+                var imagenesEliminar = _context.ProductoImagenes.Where(img => EliminarGaleriaIds.Contains(img.Id)).ToList();
                 _context.ProductoImagenes.RemoveRange(imagenesEliminar);
             }
-
-            // Agregar nuevas imágenes de galería
+            // Guardar nuevas imágenes de galería en la base de datos
             if (GaleriaArchivos != null && GaleriaArchivos.Count > 0)
             {
                 int orden = productoDb.Imagenes?.Count() ?? 0;
@@ -193,21 +168,18 @@ namespace DarkCloud.Controllers
                 {
                     if (archivo != null && archivo.Length > 0)
                     {
-                        var nombreArchivo = Path.GetFileNameWithoutExtension(archivo.FileName);
-                        var extension = Path.GetExtension(archivo.FileName);
-                        var nombreUnico = $"galeria_{Guid.NewGuid()}{extension}";
-                        var rutaGuardado = Path.Combine(imagesPath, nombreUnico);
-                        using (var stream = new FileStream(rutaGuardado, FileMode.Create))
+                        using (var ms = new MemoryStream())
                         {
-                            archivo.CopyTo(stream);
+                            archivo.CopyTo(ms);
+                            var img = new ProductoImagen
+                            {
+                                ProductoId = productoDb.Id,
+                                ImagenData = ms.ToArray(),
+                                ImagenMimeType = archivo.ContentType,
+                                Orden = orden++
+                            };
+                            _context.ProductoImagenes.Add(img);
                         }
-                        var img = new ProductoImagen
-                        {
-                            ProductoId = productoDb.Id,
-                            Url = $"/images/{nombreUnico.Replace(" ", "%20")}",
-                            Orden = orden++
-                        };
-                        _context.ProductoImagenes.Add(img);
                     }
                 }
             }

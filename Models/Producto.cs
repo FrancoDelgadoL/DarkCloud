@@ -25,5 +25,8 @@ namespace DarkCloud.Models
         public int? DuracionOfertaHoras { get; set; }
 
         public virtual ICollection<ProductoImagen> Imagenes { get; set; } = new List<ProductoImagen>();
+
+        public byte[]? ImagenPrincipal { get; set; }
+        public string? ImagenPrincipalMimeType { get; set; }
     }
 }

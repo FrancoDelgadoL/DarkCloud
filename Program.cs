@@ -50,11 +50,12 @@ if (!string.IsNullOrEmpty(databaseUrl))
 //}
 
 // Configuración de Identity
-builder.Services.AddDefaultIdentity<Usuario>(options =>
+builder.Services.AddIdentity<Usuario, Microsoft.AspNetCore.Identity.IdentityRole>(options =>
 {
     options.SignIn.RequireConfirmedAccount = true;
 })
-.AddEntityFrameworkStores<ApplicationDbContext>();
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -162,5 +163,13 @@ using (var scope = app.Services.CreateScope())
         }
     }
 }
+
+app.Lifetime.ApplicationStopping.Register(() =>
+{
+    // Cerrar todas las sesiones activas al detener la aplicación
+    // Esto solo es posible si usas un proveedor de sesión distribuida (ej: Redis, SQLServer)
+    // Para InMemory, se perderán automáticamente al reiniciar
+    // Si usas cookies de autenticación, puedes limpiar cookies aquí si es necesario
+});
 
 app.Run();

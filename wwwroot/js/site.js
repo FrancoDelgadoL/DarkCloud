@@ -33,9 +33,12 @@
 // })();
 
 window.updateCartBadge = function(count) {
-  // Si no se pasa count, calcularlo desde el carrito
+  let email = (window.getEmailActivo && typeof window.getEmailActivo === 'function') ? window.getEmailActivo() : (sessionStorage.getItem('ultimoEmailLogin') || localStorage.getItem('emailActivo') || '');
   if (typeof count === 'undefined') {
-    var carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    var carrito = [];
+    if(email) {
+      carrito = JSON.parse(localStorage.getItem('carrito_' + email)) || [];
+    }
     count = carrito.reduce((acc, p) => acc + (p.cantidad || 1), 0);
   }
   sessionStorage.setItem('cartCount', count);
@@ -44,8 +47,7 @@ window.updateCartBadge = function(count) {
     badge.textContent = count;
     badge.style.display = count > 0 ? '' : 'none';
   }
-  // Persistir en localStorage para la vista de carrito
-  localStorage.setItem('cartCount', count);
+  // Elimina toda la lógica de carrito en localStorage, solo usa el backend
 }
 // Sincronizar badge al cargar la página
 (function() {
