@@ -15,6 +15,7 @@ namespace DarkCloud.Models
         public DbSet<PedidoDetalle> PedidoDetalles { get; set; }
         public DbSet<Carrito> Carritos { get; set; }
         public DbSet<CarritoDetalle> CarritoDetalles { get; set; }
+        public DbSet<HomeHeroImagen> HomeHeroImagenes { get; set; }
         // DbSet<Usuario> ya no es necesario, Identity lo gestiona
     }
 }

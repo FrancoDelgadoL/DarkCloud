@@ -1,4 +1,4 @@
-﻿@model IEnumerable<DarkCloud.Models.Producto>
+﻿@model DarkCloud.Models.HomeViewModel
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -6,18 +6,20 @@
 @inject SignInManager<Usuario> SignInManager
 @using DarkCloud.Models
 @{
-    var db = Context.RequestServices.GetService(typeof(ApplicationDbContext)) as ApplicationDbContext;
-    var heroConfig = db?.HomeHeroConfigs.FirstOrDefault();
-    var frases = heroConfig?.FrasesJson != null ? System.Text.Json.JsonSerializer.Deserialize<List<string>>(heroConfig.FrasesJson) ?? new List<string>() : new List<string>();
-    var imagenes = heroConfig?.ImagenesCarruselJson != null ? System.Text.Json.JsonSerializer.Deserialize<List<string>>(heroConfig.ImagenesCarruselJson) ?? new List<string>() : new List<string>();
-    var duracion = heroConfig?.DuracionCarruselMs > 0 ? heroConfig.DuracionCarruselMs : 5000;
+    var frases = Model.Frases;
+    var imagenesList = Model.ImagenesCarruselBase64;
+    var duracion = Model.DuracionCarruselMs;
+    var titulo = Model.Titulo;
+    var textoBoton = Model.TextoBoton;
+    var enlaceBoton = Model.EnlaceBoton;
+    var mensajeBanner = Model.MensajeBanner;
     var busqueda = ViewData["Busqueda"] as string;
 }
-@if (heroConfig != null && ((frases != null && frases.Count > 0) || (imagenes != null && imagenes.Count > 0))) {
+@if (((frases != null && frases.Count > 0) || (imagenesList != null && imagenesList.Count > 0))) {
 <header class="hero-section text-white py-5">
   <div class="container d-flex align-items-center justify-content-between flex-wrap flex-md-nowrap" style="min-height: 50vh;">
     <div class="hero-text text-start" style="flex:1; min-width:260px; max-width:500px;">
-      <h1 class="display-4 fw-bold">@heroConfig.Titulo</h1>
+      <h1 class="display-4 fw-bold">@titulo</h1>
       <div id="hero-carousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
           @if (frases != null) {
@@ -29,12 +31,12 @@
           }
         </div>
       </div>
-      <a href="@heroConfig.EnlaceBoton" class="btn btn-primary btn-lg mt-3">@heroConfig.TextoBoton</a>
+      <a href="@enlaceBoton" class="btn btn-primary btn-lg mt-3">@textoBoton</a>
     </div>
     <div class="hero-bg-carousel" style="flex:1; min-width:260px; max-width:600px; height:350px; position:relative;">
-      @if (imagenes != null) {
-        for (int i = 0; i < imagenes.Count; i++) {
-          <div class="bg-image@(i == 0 ? " active" : "")" style="background-image:url('@imagenes[i]');"></div>
+      @if (imagenesList != null) {
+        for (int i = 0; i < imagenesList.Count; i++) {
+          <div class="bg-image@(i == 0 ? " active" : "")" style="background-image:url('@imagenesList[i]');"></div>
         }
       }
     </div>
@@ -42,7 +44,7 @@
 </header>
 <div class="container mt-5">
   <div class="alert alert-info text-center" role="alert">
-    @heroConfig.MensajeBanner
+    @mensajeBanner
   </div>
 </div>
 }
@@ -64,7 +66,7 @@
 <div class="container mt-5">
   <h2 class="text-center mb-4">Novedades</h2>
   <div class="row">
-    @foreach (var producto in Model.OrderByDescending(p => p.Id).Take(4))
+    @foreach (var producto in Model.Productos.OrderByDescending(p => p.Id).Take(4))
     {
       var tieneOfertaValida = producto.EsOferta && producto.Descuento.HasValue && producto.PrecioReal.HasValue && producto.PrecioReal > 0 && producto.Descuento > 0 && producto.Precio > 0 && producto.Precio < producto.PrecioReal && producto.OfertaFin.HasValue && producto.OfertaFin.Value > DateTime.UtcNow;
       <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
@@ -103,7 +105,7 @@
 <div class="container mt-5">
   <h2 class="text-center mb-4">Ofertas Destacadas</h2>
   <div class="row">
-    @foreach (var producto in Model.Where(p => p.EsOferta))
+    @foreach (var producto in Model.Productos.Where(p => p.EsOferta))
     {
       var tieneOfertaValida = producto.EsOferta && producto.Descuento.HasValue && producto.PrecioReal.HasValue && producto.PrecioReal > 0 && producto.Descuento > 0 && producto.Precio > 0 && producto.Precio < producto.PrecioReal && producto.OfertaFin.HasValue && producto.OfertaFin.Value > DateTime.UtcNow;
       <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
@@ -207,7 +209,7 @@
 <div id="catalogo" class="container mt-5">
   <h2 class="text-center mb-4">Catálogo General</h2>
   <div class="row">
-    @if (!Model.Any())
+    @if (!Model.Productos.Any())
     {
       <div class="col-12">
         <div class="alert alert-warning text-center mt-4" role="alert">
@@ -217,7 +219,7 @@
     }
     else
     {
-      @foreach (var producto in Model)
+      @foreach (var producto in Model.Productos)
       {
         var tieneOfertaValida = producto.EsOferta && producto.Descuento.HasValue && producto.PrecioReal.HasValue && producto.PrecioReal > 0 && producto.Descuento > 0 && producto.Precio > 0 && producto.Precio < producto.PrecioReal && producto.OfertaFin.HasValue && producto.OfertaFin.Value > DateTime.UtcNow;
         <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
