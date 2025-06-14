@@ -115,7 +115,7 @@
             bool ofertaActiva = producto.EsOferta && producto.Descuento.HasValue && producto.PrecioReal.HasValue && producto.PrecioReal > 0 && producto.Descuento > 0 && producto.Precio > 0 && producto.Precio < producto.PrecioReal && producto.OfertaFin.HasValue && producto.OfertaFin.Value > ahora;
             <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
                 <div class="card h-100 shadow-sm bg-white neon-card border-0 d-flex flex-column">
-                    <img src="@producto.ImagenUrl" class="card-img-top p-3" alt="@producto.Nombre" style="background:#181a1b; border-radius:18px 18px 0 0; min-height:180px; object-fit:contain;">
+                    <img src="@((producto.ImagenPrincipal != null && producto.ImagenPrincipalMimeType != null) ? $"data:{producto.ImagenPrincipalMimeType};base64,{Convert.ToBase64String(producto.ImagenPrincipal)}" : (producto.ImagenUrl ?? "/images/no-image.png"))" class="card-img-top p-3" alt="@producto.Nombre" style="background:#181a1b; border-radius:18px 18px 0 0; min-height:180px; object-fit:contain;">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title fw-bold" style="font-family:'Orbitron',sans-serif; color:#7c4dff;">@producto.Nombre</h5>
                         <p class="card-text truncate-description text-dark">@producto.Descripcion</p>
