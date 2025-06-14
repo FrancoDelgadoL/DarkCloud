@@ -19,5 +19,7 @@ WORKDIR /app
 COPY --from=build /app/publish .
 # Copiar explícitamente la carpeta de migraciones para EF Core
 COPY --from=build /src/Migrations ./Migrations
+COPY entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
 ENV ASPNETCORE_URLS=http://+:80
-ENTRYPOINT ["dotnet", "DarkCloud.dll"]
+ENTRYPOINT ["./entrypoint.sh"]
