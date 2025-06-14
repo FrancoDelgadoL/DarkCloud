@@ -14,12 +14,24 @@ string? sqliteConn = builder.Configuration.GetConnectionString("SQLiteConnection
 var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 if (!string.IsNullOrEmpty(databaseUrl))
 {
-    var uri = new Uri(databaseUrl);
-    if (uri.Port == -1)
+    // Si falta el puerto, lo agregamos manualmente (Render a veces lo omite)
+    if (!databaseUrl.Contains(":5432"))
     {
-        Console.WriteLine("ERROR: La variable DATABASE_URL no contiene un puerto válido. Ejemplo correcto: postgres://usuario:contraseña@host:5432/nombre_db");
-        Environment.Exit(1);
+        // Insertar :5432 antes del nombre de la base de datos
+        var lastAt = databaseUrl.LastIndexOf('@');
+        var lastSlash = databaseUrl.LastIndexOf('/');
+        if (lastAt != -1 && lastSlash != -1 && lastSlash > lastAt)
+        {
+            var beforeDb = databaseUrl.Substring(0, lastSlash);
+            var dbName = databaseUrl.Substring(lastSlash);
+            if (!beforeDb.Contains(":"))
+            {
+                beforeDb += ":5432";
+            }
+            databaseUrl = beforeDb + dbName;
+        }
     }
+    var uri = new Uri(databaseUrl);
     var userInfo = uri.UserInfo.Split(':');
     var npgsqlConn =
         $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};Ssl Mode=Require;Trust Server Certificate=true";
