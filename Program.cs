@@ -14,27 +14,31 @@ string? sqliteConn = builder.Configuration.GetConnectionString("SQLiteConnection
 var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 if (!string.IsNullOrEmpty(databaseUrl))
 {
+    // Asegurar que el esquema sea postgres://
+    if (databaseUrl.StartsWith("postgresql://"))
+        databaseUrl = "postgres://" + databaseUrl.Substring("postgresql://".Length);
+
     // Si falta el puerto, lo agregamos manualmente (Render a veces lo omite)
-    if (!databaseUrl.Contains(":5432"))
+    var lastAt = databaseUrl.LastIndexOf('@');
+    var lastSlash = databaseUrl.LastIndexOf('/');
+    var tienePuerto = false;
+    if (lastAt != -1 && lastSlash != -1 && lastSlash > lastAt)
     {
-        // Insertar :5432 antes del nombre de la base de datos
-        var lastAt = databaseUrl.LastIndexOf('@');
-        var lastSlash = databaseUrl.LastIndexOf('/');
-        if (lastAt != -1 && lastSlash != -1 && lastSlash > lastAt)
+        var hostPort = databaseUrl.Substring(lastAt + 1, lastSlash - lastAt - 1);
+        tienePuerto = hostPort.Contains(":");
+        if (!tienePuerto)
         {
             var beforeDb = databaseUrl.Substring(0, lastSlash);
             var dbName = databaseUrl.Substring(lastSlash);
-            if (!beforeDb.Contains(":"))
-            {
-                beforeDb += ":5432";
-            }
+            beforeDb += ":5432";
             databaseUrl = beforeDb + dbName;
         }
     }
     var uri = new Uri(databaseUrl);
     var userInfo = uri.UserInfo.Split(':');
+    var port = uri.Port == -1 ? 5432 : uri.Port;
     var npgsqlConn =
-        $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};Ssl Mode=Require;Trust Server Certificate=true";
+        $"Host={uri.Host};Port={port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};Ssl Mode=Require;Trust Server Certificate=true";
     pgConn = npgsqlConn;
 }
 
